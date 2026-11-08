@@ -173,28 +173,27 @@
             .effort-story-copy { padding-left:1rem; }
         }
 
-        /* Patrocinadores: distribución centrada y carrusel automático cuando no caben */
+        /* Patrocinadores: logos ampliados y carrusel automático por anchura real */
         .sponsors-section { overflow:hidden; }
-        .sponsors-viewport { width:100%; overflow:hidden; padding:18px 0; }
-        .sponsors-track { display:flex; align-items:center; justify-content:center; gap:clamp(24px,4vw,64px); width:100%; }
-        .sponsors-track.is-marquee { width:max-content; justify-content:flex-start; animation:sponsors-marquee var(--sponsors-duration, 28s) linear infinite; will-change:transform; }
-        .sponsors-group { display:flex; flex:0 0 auto; align-items:center; justify-content:center; gap:clamp(24px,4vw,64px); padding:0 clamp(12px,2vw,28px); }
-        .sponsor-item { width:clamp(130px,15vw,190px); min-width:clamp(130px,15vw,190px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#e5e7eb; text-align:center; text-decoration:none; }
-        .sponsor-logo-frame { width:100%; height:88px; display:flex; align-items:center; justify-content:center; }
-        .sponsor-logo { display:block; max-width:100%; max-height:78px; width:auto; height:auto; object-fit:contain; transform:scale(1); transition:transform .24s ease; filter:drop-shadow(0 3px 8px rgba(0,0,0,.28)); }
+        .sponsors-viewport { width:100%; overflow:hidden; padding:22px 0; }
+        .sponsors-track { display:flex; align-items:center; justify-content:center; width:100%; }
+        .sponsors-track.is-marquee { width:max-content; justify-content:flex-start; gap:0; animation:sponsors-marquee var(--sponsors-duration, 28s) linear infinite; will-change:transform; }
+        .sponsors-group { display:flex; flex:0 0 auto; align-items:center; justify-content:center; gap:clamp(26px,4vw,68px); padding:0 clamp(14px,2vw,30px); }
+        .sponsor-item { width:clamp(169px,19.5vw,247px); min-width:clamp(169px,19.5vw,247px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; color:#e5e7eb; text-align:center; text-decoration:none; }
+        .sponsor-logo-frame { width:100%; height:114px; display:flex; align-items:center; justify-content:center; }
+        .sponsor-logo { display:block; max-width:100%; max-height:101px; width:auto; height:auto; object-fit:contain; transform:scale(1); transition:transform .24s ease; filter:drop-shadow(0 3px 8px rgba(0,0,0,.28)); }
         .sponsor-item:hover .sponsor-logo,.sponsor-item:focus-visible .sponsor-logo { transform:scale(1.09); }
-        .sponsor-name { display:block; max-width:100%; font-size:clamp(12px,.95vw,15px); font-weight:600; line-height:1.3; letter-spacing:.025em; overflow-wrap:anywhere; }
+        .sponsor-name { display:block; max-width:100%; font-size:clamp(13px,1vw,16px); font-weight:600; line-height:1.3; letter-spacing:.025em; overflow-wrap:anywhere; }
         @keyframes sponsors-marquee { from { transform:translateX(0); } to { transform:translateX(-50%); } }
         @media (max-width:767px) {
-          .sponsors-viewport { padding:12px 0; }
-          .sponsors-track,.sponsors-group { gap:24px; }
-          .sponsor-item { width:132px; min-width:132px; }
-          .sponsor-logo-frame { height:76px; }
-          .sponsor-logo { max-height:68px; }
-          .sponsor-name { font-size:12px; }
+          .sponsors-viewport { padding:16px 0; }
+          .sponsors-group { gap:26px; }
+          .sponsor-item { width:172px; min-width:172px; }
+          .sponsor-logo-frame { height:99px; }
+          .sponsor-logo { max-height:88px; }
+          .sponsor-name { font-size:13px; }
         }
         @media (prefers-reduced-motion:reduce) {
-          .sponsors-track.is-marquee { animation:none; transform:none; }
           .sponsor-logo { transition:none; }
         }
 
@@ -1150,24 +1149,19 @@
             const container = document.getElementById(containerId);
             const section = container && container.closest('.sponsors-section');
             if (!container || !section) return;
+
             const items = Array.isArray(patrocinadores) ? patrocinadores.filter(p =>
                 p && p.nombre && p.logo && p.enlace &&
                 /^https?:\/\//i.test(String(p.logo)) &&
                 /^https?:\/\//i.test(String(p.enlace))
             ) : [];
+
             container.replaceChildren();
             if (!items.length) {
                 section.style.display = 'none';
                 return;
             }
             section.style.display = '';
-
-            const width = Math.max(container.clientWidth || window.innerWidth, 280);
-            const mobile = window.innerWidth <= 767;
-            const itemWidth = mobile ? 156 : Math.min(254, Math.max(190, width * 0.19));
-            const gap = mobile ? 24 : Math.max(24, Math.min(64, width * 0.04));
-            const capacity = Math.max(1, Math.floor((width + gap) / (itemWidth + gap)));
-            const marquee = items.length > capacity;
 
             const makeItem = (p, duplicate) => {
                 const link = document.createElement('a');
@@ -1176,16 +1170,18 @@
                 link.target = '_blank';
                 link.rel = 'noopener noreferrer';
                 link.setAttribute('aria-label', p.nombre + ' — abrir página del patrocinador');
+
                 const frame = document.createElement('span');
                 frame.className = 'sponsor-logo-frame';
                 const img = document.createElement('img');
                 img.className = 'sponsor-logo';
                 img.src = p.logo;
                 img.alt = p.nombre;
-                img.loading = 'lazy';
+                img.loading = duplicate ? 'eager' : 'lazy';
                 img.decoding = 'async';
                 img.onerror = () => { link.style.display = 'none'; };
                 frame.appendChild(img);
+
                 const name = document.createElement('span');
                 name.className = 'sponsor-name';
                 name.textContent = p.nombre;
@@ -1199,23 +1195,41 @@
 
             const track = document.createElement('div');
             track.className = 'sponsors-track';
-            if (marquee) {
-                track.classList.add('is-marquee');
-                track.style.setProperty('--sponsors-duration', Math.max(20, items.length * 4) + 's');
-                const group = document.createElement('div');
-                group.className = 'sponsors-group';
-                items.forEach(p => group.appendChild(makeItem(p, false)));
-                const clone = document.createElement('div');
-                clone.className = 'sponsors-group';
-                clone.setAttribute('aria-hidden', 'true');
-                items.forEach(p => clone.appendChild(makeItem(p, true)));
-                track.append(group, clone);
-            } else {
-                items.forEach(p => track.appendChild(makeItem(p, false)));
-                track.style.flexWrap = 'wrap';
-                track.style.rowGap = '28px';
-            }
+            const group = document.createElement('div');
+            group.className = 'sponsors-group';
+            items.forEach(p => group.appendChild(makeItem(p, false)));
+            track.appendChild(group);
             container.appendChild(track);
+
+            // Medir después de insertar: usa el ancho real de logos, nombres y separaciones.
+            requestAnimationFrame(() => {
+                if (!container.isConnected || !group.isConnected) return;
+                const viewportWidth = container.clientWidth;
+                const contentWidth = group.scrollWidth;
+                const needsMarquee = contentWidth > viewportWidth + 2;
+
+                track.classList.remove('is-marquee');
+                track.style.removeProperty('--sponsors-duration');
+                track.style.flexWrap = needsMarquee ? 'nowrap' : 'wrap';
+                track.style.rowGap = needsMarquee ? '0' : '28px';
+
+                if (needsMarquee) {
+                    const clone = group.cloneNode(true);
+                    clone.setAttribute('aria-hidden', 'true');
+                    clone.querySelectorAll('a').forEach(link => {
+                        link.tabIndex = -1;
+                        link.setAttribute('aria-hidden', 'true');
+                    });
+                    track.appendChild(clone);
+                    track.classList.add('is-marquee');
+                    // Velocidad constante y duración calculada según el ancho de una vuelta.
+                    const duration = Math.max(18, Math.min(65, contentWidth / 42));
+                    track.style.setProperty('--sponsors-duration', duration + 's');
+                } else {
+                    track.style.width = '100%';
+                    track.style.justifyContent = 'center';
+                }
+            });
         }
 
         let patrocinadoresResizeTimer = null;
