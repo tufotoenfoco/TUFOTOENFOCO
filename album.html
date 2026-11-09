@@ -1343,10 +1343,10 @@
             const categoriaM = checkIsTrue(ev.Es_Mas_Deportes) ? String(ev.Categoria_Mas_Deportes||'').trim() : '';
             const esMasDeportes = v => ['mas deportes','más deportes'].includes(String(v||'').trim().toLocaleLowerCase('es'));
             const resultado = [];
-            // La categoría de la columna M tiene prioridad y aparece primero.
-            if (categoriaM) resultado.push(categoriaM);
-            // La categoría K también se muestra, salvo que sea la etiqueta genérica «Más Deportes».
-            if (categoriaK && !esMasDeportes(categoriaK) && !resultado.some(v => v.toLocaleLowerCase('es') === categoriaK.toLocaleLowerCase('es'))) resultado.push(categoriaK);
+            // La categoría de la columna K aparece primero (a la izquierda).
+            if (categoriaK && !esMasDeportes(categoriaK)) resultado.push(categoriaK);
+            // La categoría de la columna M aparece después (a la derecha).
+            if (categoriaM && !resultado.some(v => v.toLocaleLowerCase('es') === categoriaM.toLocaleLowerCase('es'))) resultado.push(categoriaM);
             if (!resultado.length && categoriaK) resultado.push(categoriaK);
             return resultado.length ? resultado : ['General'];
         }
