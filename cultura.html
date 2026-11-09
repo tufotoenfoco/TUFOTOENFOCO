@@ -9,30 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/tailwind.css">
+    <script defer src="assets/datos-cache.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            future: {
-                hoverOnlyWhenSupported: true,
-            },
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        brand: {
-                            dark: '#000000',
-                            base: '#18181b',
-                            accent: '#F1E933', 
-                            highlight: '#F1E933',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
         html { scroll-behavior: smooth; }
         
@@ -269,7 +248,7 @@
 </head>
 <body data-page="cultura" class="bg-zinc-950 text-gray-200 font-sans antialiased flex flex-col min-h-screen">
     <div id="pantalla-carga" class="fixed inset-0 bg-zinc-950 z-[9999] flex flex-col items-center justify-center">
-        <img src="https://raw.githubusercontent.com/JGFoto/jgfoto/refs/heads/main/assets/LogoWebTuFotoEnFoco.png" alt="TUFOTOENFOCO" class="h-16 md:h-20 w-auto animate-latido mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+        <img src="https://raw.githubusercontent.com/tufotoenfoco/TUFOTOENFOCO/refs/heads/main/assets/LogoWebTuFotoEnFoco.png" alt="TUFOTOENFOCO" class="h-16 md:h-20 w-auto animate-latido mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
         <div class="w-32 h-1 bg-zinc-800 rounded-full overflow-hidden"><div class="h-full bg-brand-accent w-1/3 rounded-full animate-[ping_1.5s_cubic-bezier(0,0,0.2,1)_infinite] mx-auto"></div></div>
     </div>
 
@@ -555,6 +534,7 @@
     <div id="contacto-component"></div>
     <script>
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8mylASNDJZjSrcN_rayfjN38bWFixXghqU5sP86QVUDbGWHSK_0gL0-RBlFezr07X/exec';
+        const DATOS_JSON_URL = 'https://raw.githubusercontent.com/tufotoenfoco/TUFOTOENFOCO/main/datos.json';
         const placeholderImagen = "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20600%20400%27%3E%3Crect%20width%3D%27600%27%20height%3D%27400%27%20fill%3D%27%2352525b%27%2F%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23a1a1aa%27%20stroke-width%3D%2712%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20transform%3D%27translate%28210%20125%29%27%3E%3Cpath%20d%3D%27M160%20150H20a18%2018%200%200%201-18-18V45a18%2018%200%200%201%2018-18h34L76%202h52l22%2025h10a18%2018%200%200%201%2018%2018v87a18%2018%200%200%201-18%2018Z%27%2F%3E%3Ccircle%20cx%3D%2790%27%20cy%3D%2788%27%20r%3D%2735%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E";
         const svgCamara = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233f3f46' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/%3E%3Ccircle cx='12' cy='13' r='4'/%3E%3C/svg%3E";
 
@@ -933,20 +913,24 @@
 
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // Carga el formulario desde un único archivo compartido por toda la web.
-            try {
-                const contactoResponse = await fetch('contacto.html', { cache: 'no-store' });
-                if (!contactoResponse.ok) throw new Error('No se pudo cargar contacto.html');
-                document.getElementById('contacto-component').innerHTML = await contactoResponse.text();
-            } catch (error) {
-                console.error('Error al cargar el formulario de contacto:', error);
-            }
+            // La lectura de datos empieza a la vez que los componentes compartidos.
+            const datosCargaPromise = cargarDatosDesdeSheet();
             const toggleClass = (el, cls) => el.classList.toggle(cls);
-            
+
             try {
-                const [headerRes, footerRes] = await Promise.all([fetch('header.html'), fetch('footer.html')]);
-                if (headerRes.ok) document.getElementById('header-placeholder').innerHTML = await headerRes.text();
-                if (footerRes.ok) document.getElementById('footer-placeholder').innerHTML = await footerRes.text();
+                const [contactoRes, headerRes, footerRes] = await Promise.all([
+                    fetch('contacto.html', { cache: 'default' }),
+                    fetch('header.html', { cache: 'default' }),
+                    fetch('footer.html', { cache: 'default' })
+                ]);
+                const [contactoHtml, headerHtml, footerHtml] = await Promise.all([
+                    contactoRes.ok ? contactoRes.text() : Promise.resolve(null),
+                    headerRes.ok ? headerRes.text() : Promise.resolve(null),
+                    footerRes.ok ? footerRes.text() : Promise.resolve(null)
+                ]);
+                if (contactoHtml !== null) document.getElementById('contacto-component').innerHTML = contactoHtml;
+                if (headerHtml !== null) document.getElementById('header-placeholder').innerHTML = headerHtml;
+                if (footerHtml !== null) document.getElementById('footer-placeholder').innerHTML = footerHtml;
                 const path=location.pathname.split('/').pop()||'index.html';const page=document.body.dataset.page||'';const catMode=page==='categoria'||(page==='galerias'&&new URLSearchParams(location.search).get('tipo')==='categorias');
                 document.querySelectorAll('#nav-links-normal a,#nav-links-normal button,#mobile-nav-links > a').forEach(a=>{a.classList.remove('text-brand-accent','font-bold','bg-brand-accent','text-black');a.classList.add('text-gray-300');});
                 const activeSelector=page==='sinbalon'?'a[href="sin-balon.html"]':page==='cultura'?'a[href="cultura.html"]':catMode?'#desktop-cat-btn':(!page?'#nav-links-normal a[href="index.html"]':null);
@@ -1051,16 +1035,15 @@
                 }
             });
 
-            cargarDatosDesdeSheet();
+            // La descarga de datos ya está en curso desde el inicio del evento.
+            await datosCargaPromise;
         });
 
         async function cargarDatosDesdeSheet() {
             try {
-                const req = await fetch(APPS_SCRIPT_URL, { cache: 'no-store' });
-                if (!req.ok) throw new Error('No se pudo conectar con Apps Script');
-                const data = await req.json();
+                const data = await window.TFEDataCache.get(DATOS_JSON_URL);
                 if (!data || typeof data !== 'object' || !Array.isArray(data.galerias) || !data.gestionWeb) {
-                    throw new Error('Respuesta no válida de Apps Script');
+                    throw new Error('Contenido no válido en datos.json');
                 }
 
                 const splash = document.getElementById('pantalla-carga');
@@ -1191,7 +1174,7 @@
             pantalla.innerHTML = `
                 <div class="w-full max-w-2xl mx-auto text-center flex flex-col items-center">
                     <a href="index.html" aria-label="TuFotoEnFoco - Inicio" class="inline-flex justify-center mb-10">
-                        <img src="https://raw.githubusercontent.com/JGFoto/jgfoto/refs/heads/main/assets/LogoWebTuFotoEnFoco.png"
+                        <img src="https://raw.githubusercontent.com/tufotoenfoco/TUFOTOENFOCO/refs/heads/main/assets/LogoWebTuFotoEnFoco.png"
                              alt="TuFotoEnFoco" class="h-16 sm:h-20 w-auto max-w-full object-contain drop-shadow-[0_0_18px_rgba(241,233,51,0.12)]">
                     </a>
                     <div class="w-16 h-1 rounded-full bg-brand-accent mb-8 shadow-[0_0_16px_rgba(241,233,51,0.35)]"></div>
