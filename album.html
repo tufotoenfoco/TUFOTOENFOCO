@@ -872,35 +872,68 @@
         }
 
 
+        // Carga robusta de componentes compartidos: reintentos independientes y copia local de respaldo.
+        async function cargarComponenteCompartido(url, placeholderId, marcador) {
+            const destino = document.getElementById(placeholderId);
+            if (!destino) return null;
+            const cacheKey = `tfe:componente:v2:${url}`;
+            let htmlLocal = null;
+            try { htmlLocal = localStorage.getItem(cacheKey); } catch (_) {}
+
+            // Mostrar inmediatamente la última versión válida guardada en este navegador.
+            if (htmlLocal && htmlLocal.includes(marcador)) destino.innerHTML = htmlLocal;
+
+            let ultimoError = null;
+            for (let intento = 0; intento < 3; intento++) {
+                try {
+                    const respuesta = await fetch(url, { cache: 'default', credentials: 'same-origin' });
+                    if (!respuesta.ok) throw new Error(`${url}: HTTP ${respuesta.status}`);
+                    const html = await respuesta.text();
+                    if (!html || !html.includes(marcador)) throw new Error(`${url}: respuesta vacía o incompleta`);
+                    if (html !== htmlLocal) destino.innerHTML = html;
+                    try { localStorage.setItem(cacheKey, html); } catch (_) {}
+                    return html;
+                } catch (error) {
+                    ultimoError = error;
+                    if (intento < 2) await new Promise(resolve => setTimeout(resolve, 250 * (intento + 1)));
+                }
+            }
+
+            // Si falla la red, se conserva la copia local; un componente nunca bloquea a los demás.
+            if (!htmlLocal || !htmlLocal.includes(marcador)) {
+                console.error(`No se pudo cargar ${url}:`, ultimoError);
+                return null;
+            }
+            console.warn(`Se utiliza la copia local de ${url}:`, ultimoError);
+            return htmlLocal;
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             // La lectura de datos empieza a la vez que los componentes compartidos.
             const datosCargaPromise = cargarDatosDesdeSheet();
             const toggleClass = (el, cls) => el.classList.toggle(cls);
 
             try {
-                const [contactoRes, headerRes, footerRes] = await Promise.all([
-                    fetch('contacto.html', { cache: 'default' }),
-                    fetch('header.html', { cache: 'default' }),
-                    fetch('footer.html', { cache: 'default' })
+                // Cada componente tiene su propia recuperación: un fallo no impide cargar los otros.
+                await Promise.all([
+                    cargarComponenteCompartido('contacto.html', 'contacto-component', 'form-contacto'),
+                    cargarComponenteCompartido('header.html', 'header-placeholder', 'main-header'),
+                    cargarComponenteCompartido('footer.html', 'footer-placeholder', 'main-footer')
                 ]);
-                const [contactoHtml, headerHtml, footerHtml] = await Promise.all([
-                    contactoRes.ok ? contactoRes.text() : Promise.resolve(null),
-                    headerRes.ok ? headerRes.text() : Promise.resolve(null),
-                    footerRes.ok ? footerRes.text() : Promise.resolve(null)
-                ]);
-                if (contactoHtml !== null) document.getElementById('contacto-component').innerHTML = contactoHtml;
-                if (headerHtml !== null) document.getElementById('header-placeholder').innerHTML = headerHtml;
-                if (footerHtml !== null) document.getElementById('footer-placeholder').innerHTML = footerHtml;
+
+                // Los datos pueden haber terminado antes que el header; reconstruimos ahora el menú dinámico.
+                if (Array.isArray(window._tfeGaleriasParaMenu)) {
+                    actualizarMenusDinamicos(window._tfeGaleriasParaMenu);
+                }
+
                 const path=location.pathname.split('/').pop()||'index.html';const page=document.body.dataset.page||'';const catMode=page==='categoria'||(page==='galerias'&&new URLSearchParams(location.search).get('tipo')==='categorias');
                 document.querySelectorAll('#nav-links-normal a,#nav-links-normal button,#mobile-nav-links > a').forEach(a=>{a.classList.remove('text-brand-accent','font-bold','bg-brand-accent','text-black');a.classList.add('text-gray-300');});
                 const activeSelector=page==='sinbalon'?'a[href="sin-balon.html"]':page==='cultura'?'a[href="cultura.html"]':catMode?'#desktop-cat-btn':(!page?'#nav-links-normal a[href="index.html"]':null);
                 if(activeSelector){document.querySelectorAll(activeSelector).forEach(a=>{a.classList.remove('text-gray-300');a.classList.add('text-brand-accent','font-bold');});}if(catMode){document.getElementById('mobile-cat-btn')?.classList.add('text-brand-accent','font-bold');}
                 if(page==='sinbalon'||page==='cultura'){const mobile=document.querySelector(`#mobile-nav-links a[href="${page==='sinbalon'?'sin-balon.html':'cultura.html'}"]`);if(mobile){mobile.classList.remove('text-gray-300');mobile.classList.add('text-brand-accent','font-bold');}}
-                
             } catch (e) {
-                console.error(e);
+                console.error('Error al preparar los componentes compartidos:', e);
             }
-
             document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
                 const menu = document.getElementById('mobile-menu');
                 toggleClass(menu, 'hidden');
@@ -1119,6 +1152,7 @@
                 setImagenSeccion('img-seccion-sin-balon', data.imgSinBalon);
                 setImagenSeccion('img-seccion-cultura', data.imgCultura);
                 
+                window._tfeGaleriasParaMenu = gals;
                 actualizarMenusDinamicos(gals);
                 aplicarFondosAlternos();
 
