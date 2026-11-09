@@ -1257,7 +1257,22 @@
         }
 
         function normalizarCategoria(v){return String(v||'').trim().toLocaleLowerCase('es');}
-        function categoriaEfectiva(ev){return String(ev.Categoria_Mas_Deportes||'').trim()||String(ev.Categoria_Header||'').trim()||'General';}
+        function categoriaEfectiva(ev){
+            const categoriaM = checkIsTrue(ev.Es_Mas_Deportes) ? String(ev.Categoria_Mas_Deportes||'').trim() : '';
+            return categoriaM || String(ev.Categoria_Header||'').trim() || 'General';
+        }
+        function categoriasParaTarjeta(ev){
+            const categoriaK = String(ev.Categoria_Header||'').trim();
+            const categoriaM = checkIsTrue(ev.Es_Mas_Deportes) ? String(ev.Categoria_Mas_Deportes||'').trim() : '';
+            const esMasDeportes = v => ['mas deportes','más deportes'].includes(String(v||'').trim().toLocaleLowerCase('es'));
+            const resultado = [];
+            // La categoría de la columna M tiene prioridad y aparece primero.
+            if (categoriaM) resultado.push(categoriaM);
+            // La categoría K también se muestra, salvo que sea la etiqueta genérica «Más Deportes».
+            if (categoriaK && !esMasDeportes(categoriaK) && !resultado.some(v => v.toLocaleLowerCase('es') === categoriaK.toLocaleLowerCase('es'))) resultado.push(categoriaK);
+            if (!resultado.length && categoriaK) resultado.push(categoriaK);
+            return resultado.length ? resultado : ['General'];
+        }
         function albumPerteneceCategoria(g, cat) {
             const target = normalizarCategoria(cat);
             return target && normalizarCategoria(categoriaEfectiva(g)) === target;
@@ -1318,14 +1333,8 @@
         }
 
         function generarTarjetaHTML(evento) {
-            const cat = categoriaEfectiva(evento);
-            let cColor = "bg-black/80 text-white", bColor = "border-zinc-800", catMost = cat;
-
-            if (cat.toLowerCase() === 'más deportes' || cat.toLowerCase() === 'mas deportes') {
-                if (evento.Categoria_Mas_Deportes && String(evento.Categoria_Mas_Deportes).trim() !== '') {
-                    catMost = String(evento.Categoria_Mas_Deportes).trim();
-                }
-            }
+            const categoriasTarjeta = categoriasParaTarjeta(evento);
+            const cColor = "bg-black/80 text-white", bColor = "border-zinc-800";
             
             const fot = urlImagenGaleria(evento.Foto_Cabecera || placeholderImagen, evento);
             const fec = `${evento.Fecha || ''} ${(evento.Fecha && evento.Lugar) ? '•' : ''} ${evento.Lugar || ''}`.trim();
@@ -1335,8 +1344,8 @@
                     <div class="tarjeta-interior h-full flex flex-col">
                         <div class="relative h-64 overflow-hidden flex-shrink-0 group">
                             <img src="${fot}" onerror="this.onerror=null;this.src='${placeholderImagen}'" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out" draggable="false">
-                            <div class="absolute top-3 left-3 flex gap-2">
-                                <a href="categoria.html?cat=${encodeURIComponent(catMost)}" onclick="event.stopPropagation()" class="${cColor} border border-zinc-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm hover:border-brand-accent">${catMost}</a>
+                            <div class="absolute top-3 left-3 flex flex-wrap gap-2">
+                                ${categoriasTarjeta.map(categoria => `<a href="categoria.html?cat=${encodeURIComponent(categoria)}" onclick="event.stopPropagation()" class="${cColor} border border-zinc-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm hover:border-brand-accent">${categoria}</a>`).join('')}
                             </div>
                         </div>
                         <div class="p-5 flex flex-col flex-grow group">
