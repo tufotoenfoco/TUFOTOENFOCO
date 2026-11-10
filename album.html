@@ -542,6 +542,29 @@
         let arrayFotosActuales = [];
         let indexFotoActual = 0;
 
+
+        // La columna G de WEB se publica como Fecha (dd/MM/yyyy o ISO).
+        // Orden descendente: primero la galería con fecha más reciente.
+        function fechaGaleriaMs(ev) {
+            const value = ev && (ev.Fecha ?? ev.fecha ?? ev.G);
+            if (value instanceof Date) return value.getTime();
+            const raw = String(value ?? '').trim();
+            if (!raw) return 0;
+            let m = raw.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);
+            if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1])).getTime();
+            m = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+            if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime();
+            const parsed = Date.parse(raw);
+            return Number.isFinite(parsed) ? parsed : 0;
+        }
+        function compararFechaDescendente(a, b) {
+            return fechaGaleriaMs(b) - fechaGaleriaMs(a);
+        }
+        function fechaRecienteCategoria(cat, galerias) {
+            return galerias.reduce((max, ev) =>
+                albumPerteneceCategoria(ev, cat) ? Math.max(max, fechaGaleriaMs(ev)) : max, 0);
+        }
+
         function checkIsTrue(val) {
             if (val === true) return true;
             return ['TRUE', '1', 'SI', 'SÍ', 'YES'].includes(String(val ?? '').trim().toUpperCase());
@@ -758,9 +781,11 @@
             try {
                 const url = `${APPS_SCRIPT_URL}?action=photos&folder=${encodeURIComponent(idEvento)}&_=${Date.now()}`;
                 const response = await fetch(url, { cache: 'no-store' });
-                if (!response.ok) return [];
+                if (!response.ok) throw new Error(`Apps Script respondió HTTP ${response.status}`);
                 const data = await response.json();
-                return Array.isArray(data.photos) ? data.photos : [];
+                if (data && data.error) throw new Error(data.error);
+                if (!data || !Array.isArray(data.photos)) throw new Error('La respuesta de Apps Script no contiene una lista de fotografías válida.');
+                return data.photos.filter(url => typeof url === 'string' && /^https?:\/\//i.test(url));
             } catch (e) {
                 console.error('No se pudieron cargar las fotografías desde Backblaze:', e);
                 return [];
@@ -1108,7 +1133,7 @@
                 window.categoriasDisponibles = data.categorias || [];
                 window.categoriasOrdenadas = data.categoriasOrdenadas || [];
                 window.categoriasMasDeportesOrdenadas = data.categoriasMasDeportesOrdenadas || [];
-                const gals = (data.galerias || []).filter(g => String(g.ID_Evento || '').trim() !== '');
+                const gals = (data.galerias || []).filter(g => String(g.ID_Evento || '').trim() !== '').sort(compararFechaDescendente);
                 gals.forEach((ev, idx) => { ev._id = idx; window.eventosGlobal[idx] = ev; });
                 if (pageMode) { document.getElementById('main-content-sections')?.classList.add('hidden'); if(pageMode==='album') await renderAlbumPage(gals); else renderDynamicPage(pageMode,gals); }
 
