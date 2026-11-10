@@ -776,6 +776,24 @@
 
         let eventoModalActual = null;
         let urlCompraActual = '';
+
+        function tfeRegistrarEstadistica(tipo, ev, origen) {
+            if (!ev) return;
+            const id = String(ev.ID_Evento || ev.ID_evento || ev.ID || '').trim();
+            if (!id) return;
+            if (tipo === 'free' && !checkIsTrue(ev.Descarga_Gratis ?? ev.Descarga ?? ev['Descarga gratis'])) return;
+            if (tipo === 'buy' && !/^https?:\/\//i.test(String(ev.Link_Compra || '').trim())) return;
+            const params = new URLSearchParams({ action: 'stats', type: tipo, id, title: String(ev.Titulo || ''), source: String(origen || '') });
+            const beacon = new Image();
+            beacon.src = APPS_SCRIPT_URL + '?' + params.toString() + '&_=' + Date.now();
+        }
+        document.addEventListener('click', function (event) {
+            const link = event.target.closest('#modal-btn-comprar-top, #modal-btn-comprar, #descarga-opcion-compra, .tfe-buy-link');
+            if (!link || link.classList.contains('hidden')) return;
+            if (!/^https?:\/\//i.test(String(link.href || ''))) return;
+            if (typeof eventoModalActual !== 'undefined' && eventoModalActual) tfeRegistrarEstadistica('buy', eventoModalActual, 'web');
+        }, true);
+
         async function fetchFotosDesdeBackblaze(idEvento) {
             try {
                 const url = `${APPS_SCRIPT_URL}?action=photos&folder=${encodeURIComponent(idEvento)}&_=${Date.now()}`;
@@ -795,6 +813,7 @@
         window.abrirModalGaleria = async function(idEv) {
             const ev=window.eventosGlobal[idEv]; if(!ev)return;
             eventoModalActual=ev;
+            tfeRegistrarEstadistica('view', ev, 'vista_previa');
             const albumLink=document.getElementById('modal-btn-ver-album');
             if(albumLink) albumLink.href='album.html?id='+codificarIdAlbum(ev.ID_Evento||ev.ID_evento||ev.ID||'');
             document.getElementById('modal-gal-titulo').textContent=ev.Titulo||'';
@@ -1023,7 +1042,7 @@
             const mImg = document.getElementById('modal-imagen-simple');
             
             document.getElementById('btn-cerrar-galeria').addEventListener('click', () => toggleModal(mGal, false));
-            document.getElementById('modal-btn-ver-album').addEventListener('click',e=>{e.preventDefault();if(eventoModalActual)location.href='album.html?id='+codificarIdAlbum(eventoModalActual.ID_Evento||'');});
+            document.getElementById('modal-btn-ver-album').addEventListener('click',e=>{e.preventDefault();if(eventoModalActual){try{sessionStorage.setItem('tfe_stats_skip_album_view_'+String(eventoModalActual.ID_Evento||''),String(Date.now()));}catch(err){}location.href='album.html?id='+codificarIdAlbum(eventoModalActual.ID_Evento||'');}});
             document.getElementById('btn-cerrar-imagen-simple').addEventListener('click', () => toggleModal(mImg, false));
             
             mGal.addEventListener('click', (e) => { if(e.target === mGal) toggleModal(mGal, false); });
@@ -1037,7 +1056,7 @@
                 buy.classList.toggle('hidden',!/^https?:\/\//i.test(urlCompraActual));toggleModal(opciones,true);
             });
             document.getElementById('descarga-opcion-volver').addEventListener('click',()=>toggleModal(opciones,false));
-            document.getElementById('descarga-opcion-gratis').addEventListener('click',()=>{toggleModal(opciones,false);descargarFotoSeleccionada();});
+            document.getElementById('descarga-opcion-gratis').addEventListener('click',()=>{tfeRegistrarEstadistica('free',eventoModalActual,'descarga_gratis');toggleModal(opciones,false);descargarFotoSeleccionada();});
 
 
             formContacto.addEventListener('submit', async (e) => {
