@@ -1311,7 +1311,7 @@
             const esMasDeportes = v => ['mas deportes','más deportes'].includes(String(v||'').trim().toLocaleLowerCase('es'));
             const resultado = [];
             // La categoría de la columna K aparece primero (a la izquierda).
-            if (categoriaK && !esMasDeportes(categoriaK)) resultado.push(categoriaK);
+            if (categoriaK && !esMasDeportes(categoriaK)) resultado.push(categoriaK); // Incluye también 'Sin balón' en las tarjetas de galerías.
             // La categoría de la columna M aparece después (a la derecha).
             if (categoriaM && !resultado.some(v => v.toLocaleLowerCase('es') === categoriaM.toLocaleLowerCase('es'))) resultado.push(categoriaM);
             if (!resultado.length && categoriaK) resultado.push(categoriaK);
@@ -1325,7 +1325,7 @@
         function renderDynamicPage(mode,gals){
             const root=document.getElementById('dynamic-page');if(!root)return;root.classList.remove('hidden');
             const params=new URLSearchParams(location.search); if(mode==='galerias') mode=params.get('tipo')==='categorias'?'categorias':'todas'; const category=mode==='categoria'?(params.get('cat')||''):'';
-            const cats=[...new Set([...(window.categoriasOrdenadas||[]),...(window.categoriasDisponibles||[]),...(window.categoriasMasDeportesOrdenadas||[]),...gals.map(g=>categoriaEfectiva(g))].map(v=>String(v||'').trim()).filter(Boolean))].filter(cat=>!['sin balon','cultura','mas deportes'].includes(normalizarCategoria(cat))&&gals.some(g=>albumPerteneceCategoria(g,cat))); cats.sort((a,b)=>fechaRecienteCategoria(b,gals)-fechaRecienteCategoria(a,gals));
+            const cats=[...new Set([...(window.categoriasOrdenadas||[]),...(window.categoriasDisponibles||[]),...(window.categoriasMasDeportesOrdenadas||[]),...gals.map(g=>categoriaEfectiva(g))].map(v=>String(v||'').trim()).filter(Boolean))].filter(cat=>!['sin balon','cultura','mas deportes','más deportes'].includes(normalizarCategoria(cat))&&gals.some(g=>albumPerteneceCategoria(g,cat))); cats.sort((a,b)=>fechaRecienteCategoria(b,gals)-fechaRecienteCategoria(a,gals));
             if(mode==='categorias'){
                 const cols=cats.length<=4?2:(cats.length<=6?3:(cats.length<=8?4:(cats.length%3===0?3:4)));
                 const cards=cats.map(cat=>{const ev=gals.find(g=>albumPerteneceCategoria(g,cat));const img=ev ? urlImagenGaleria(ev.Foto_Cabecera||placeholderImagen,ev) : placeholderImagen;return `<a href="categoria.html?cat=${encodeURIComponent(cat)}" class="${cats.length===1?'col-span-full justify-self-center w-full max-w-[520px] ':''}group bg-brand-base border border-zinc-800 rounded-2xl overflow-hidden hover:border-brand-accent transition-all"><div class="h-52 overflow-hidden"><img src="${img}" onerror="this.onerror=null;this.src='${placeholderImagen}'" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"></div><div class="p-5"><h2 class="text-xl font-bold text-white group-hover:text-brand-accent">${cat}</h2><p class="text-sm text-gray-400 mt-1">${gals.filter(g=>albumPerteneceCategoria(g,cat)).length} galerías</p></div></a>`;}).join('');
