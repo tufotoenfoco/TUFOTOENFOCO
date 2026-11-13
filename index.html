@@ -548,14 +548,35 @@
     <!-- CONTENEDOR DONDE SE INYECTARÁ EL FOOTER -->
     <div id="footer-placeholder"></div>
 
+    <style>
+        .tfe-buy-top { display: none !important; }
+        .tfe-bottom-action { display: none !important; }
+        .tfe-bottom-action.is-visible { display: inline-flex !important; }
+        .tfe-mobile-action { display: none !important; }
+        @media (min-width: 768px) {
+            .tfe-buy-top.is-visible { display: inline-flex !important; }
+        }
+        @media (max-width: 767px) {
+            .tfe-mobile-action.is-visible { display: inline-flex !important; }
+        }
+    </style>
+
     <div id="modal-galeria-vista" class="fixed inset-0 z-[120] bg-black/95 backdrop-blur-md hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-brand-base w-full max-w-[96vw] h-[94vh] md:h-[92vh] rounded-2xl flex flex-col relative overflow-hidden shadow-2xl border border-zinc-800 transform scale-95 transition-transform duration-300" id="modal-galeria-content">
             <button id="btn-cerrar-galeria" class="absolute top-4 right-4 z-50 bg-black/50 hover:bg-brand-accent hover:text-black text-white rounded-full p-2 transition-colors focus:outline-none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <div class="p-6 md:p-8 border-b border-zinc-800 shrink-0 bg-brand-base relative z-40 pr-16">
-                <a id="modal-btn-comprar-top" href="#" target="_blank" rel="noopener noreferrer" class="hidden mb-3 inline-flex items-center justify-center px-4 py-2 bg-brand-accent hover:bg-white text-black text-xs font-bold uppercase tracking-widest rounded-md transition-colors">Tu recuerdo sin logo · descárgalo aquí</a>
-                <a id="modal-btn-ver-album" href="album.html" class="inline-flex w-fit mb-3 ml-0 items-center justify-center px-4 py-2 border border-zinc-600 hover:border-brand-accent hover:text-brand-accent text-white text-xs font-bold uppercase tracking-widest rounded-md transition-colors">Ver álbum</a>
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                    <a id="modal-btn-comprar-top" href="#" target="_blank" rel="noopener noreferrer" class="tfe-buy-top items-center justify-center px-4 py-2 bg-brand-accent hover:bg-white text-black text-xs font-bold uppercase tracking-widest rounded-md transition-colors">Tu recuerdo sin logo · descárgalo aquí</a>
+                    <a id="modal-btn-ver-album" href="album.html" class="inline-flex w-fit items-center justify-center px-4 py-2 border border-zinc-600 hover:border-brand-accent hover:text-brand-accent text-white text-xs font-bold uppercase tracking-widest rounded-md transition-colors">Ver álbum</a>
+                    <a id="modal-btn-comprar-mobile" href="#" target="_blank" rel="noopener noreferrer" aria-label="Comprar recuerdo sin logo" title="Comprar recuerdo sin logo" class="tfe-mobile-action items-center justify-center w-10 h-10 bg-brand-accent text-black rounded-md shadow transition-transform active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </a>
+                    <button id="modal-btn-descargar-mobile" type="button" aria-label="Descarga gratis con logo" title="Descarga gratis con logo" class="tfe-mobile-action items-center justify-center w-10 h-10 bg-zinc-600 hover:bg-zinc-500 text-white rounded-md shadow transition-transform active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    </button>
+                </div>
                 <h2 id="modal-gal-titulo" class="text-2xl md:text-3xl font-black text-white uppercase tracking-tight"></h2>
                 <p id="modal-gal-desc" class="text-gray-400 text-sm md:text-base mt-2 line-clamp-2 md:line-clamp-none"></p>
                 <p id="modal-gal-resultados" class="hidden text-brand-accent text-sm md:text-base mt-2"></p>
@@ -580,12 +601,12 @@
                                 <span id="modal-gal-fecha" class="text-xs md:text-sm"></span>
                             </div>
                         </div>
-                        <div class="flex gap-2 w-full sm:w-auto">
-                            <button id="modal-btn-descargar" class="hidden flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-base border border-zinc-700 hover:border-white text-white text-xs font-bold uppercase tracking-widest rounded-md transition-colors">
+                        <div class="hidden md:flex gap-2 w-full sm:w-auto">
+                            <button id="modal-btn-descargar" class="tfe-bottom-action flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-base border border-zinc-700 hover:border-white text-white text-xs font-bold uppercase tracking-widest rounded-md transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                 Descarga gratis con logo
                             </button>
-                            <a id="modal-btn-comprar" href="#" target="_blank" class="hidden flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-accent hover:bg-white text-black text-xs font-bold uppercase tracking-widest rounded-md transition-colors">
+                            <a id="modal-btn-comprar" href="#" target="_blank" class="tfe-bottom-action flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-accent hover:bg-white text-black text-xs font-bold uppercase tracking-widest rounded-md transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                 Tu recuerdo sin logo · descárgalo aquí
                             </a>
@@ -940,10 +961,15 @@
             const free=checkIsTrue(ev.Descarga_Gratis ?? ev.Descarga ?? ev['Descarga gratis']);
             urlCompraActual=String(ev.Link_Compra||'').trim();
             const hasLink=/^https?:\/\//i.test(urlCompraActual);
-            document.getElementById('modal-btn-descargar').classList.toggle('hidden',!free);
-            document.getElementById('modal-btn-comprar').classList.add('hidden');
+            document.getElementById('modal-btn-descargar').classList.toggle('is-visible',free);
+            const bottomBuy=document.getElementById('modal-btn-comprar');
+            bottomBuy.classList.toggle('is-visible',hasLink);
             const topBuy=document.getElementById('modal-btn-comprar-top');
-            topBuy.classList.toggle('hidden',!hasLink); if(hasLink)topBuy.href=urlCompraActual;
+            topBuy.classList.toggle('is-visible',hasLink); if(hasLink)topBuy.href=urlCompraActual;
+            if(hasLink)bottomBuy.href=urlCompraActual;
+            const mobileBuy=document.getElementById('modal-btn-comprar-mobile');
+            mobileBuy.classList.toggle('is-visible',hasLink); if(hasLink)mobileBuy.href=urlCompraActual;
+            document.getElementById('modal-btn-descargar-mobile').classList.toggle('is-visible',free);
             toggleModal(document.getElementById('modal-galeria-vista'),true);
             const main=document.getElementById('modal-gal-img-principal');
             main.src=svgCamara; main.alt='Cargando fotografía';
@@ -1158,6 +1184,7 @@
             
             document.getElementById('btn-cerrar-galeria').addEventListener('click', () => toggleModal(mGal, false));
             document.getElementById('modal-btn-ver-album').addEventListener('click',e=>{e.preventDefault();if(eventoModalActual){try{sessionStorage.setItem('tfe_stats_skip_album_view_'+String(eventoModalActual.ID_Evento||''),String(Date.now()));}catch(err){}location.href='album.html?id='+codificarIdAlbum(eventoModalActual.ID_Evento||'');}});
+            document.getElementById('modal-btn-descargar-mobile').addEventListener('click',()=>document.getElementById('modal-btn-descargar').click());
             document.getElementById('btn-cerrar-imagen-simple').addEventListener('click', () => toggleModal(mImg, false));
             
             mGal.addEventListener('click', (e) => { if(e.target === mGal) toggleModal(mGal, false); });
