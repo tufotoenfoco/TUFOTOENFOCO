@@ -675,7 +675,7 @@
             let endpoint = 'imagen-externa';
             try {
                 const parsed = new URL(source);
-                if (parsed.hostname.toLowerCase() === 'f003.backblazeb2.com' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
+                if (parsed.hostname.toLowerCase() === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
             } catch (_) { return source; }
             const encodedSource = btoa(unescape(encodeURIComponent(source)))
                 .replace(/\+/g, '-')
@@ -690,7 +690,7 @@
             let endpoint = 'imagen-externa';
             try {
                 const parsed = new URL(source);
-                if (parsed.hostname.toLowerCase() === 'f003.backblazeb2.com' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
+                if (parsed.hostname.toLowerCase() === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
             } catch (_) { return source; }
             const encodedSource = btoa(unescape(encodeURIComponent(source)))
                 .replace(/\+/g, '-')
