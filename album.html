@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tufotoenfoco | Fotografía Deportiva en Badajoz</title>
+    
+    <link rel="icon" href="https://i.imgur.com/eeVJEJB.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <link rel="stylesheet" href="assets/tailwind.css">
+    <script defer src="assets/datos-cache.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; }
+        
+        .carrusel-scroll::-webkit-scrollbar { height: 3px; }
+        .carrusel-scroll::-webkit-scrollbar-track { background-color: #18181b; border-radius: 2px; }
+        .carrusel-scroll::-webkit-scrollbar-thumb { background-color: #F1E933; border-radius: 2px; }
+        .carrusel-scroll::-webkit-scrollbar-thumb:hover { background-color: #d4cc20; }
+        
+        @media (min-width: 1024px) {
+            .carrusel-principal::-webkit-scrollbar-track { 
+                margin-left: calc(50vw - 450px);
+                margin-right: calc(50vw - 450px);
+            }
+        }
+
+        .carrusel-miniaturas::-webkit-scrollbar { width: 2px; height: 2px; }
+        .carrusel-miniaturas::-webkit-scrollbar-button { display:none !important; width:0 !important; height:0 !important; }
+        .carrusel-miniaturas::-webkit-scrollbar-button:single-button { display:none !important; }
+        .carrusel-miniaturas { scroll-behavior:smooth; }
+        .carrusel-miniaturas::-webkit-scrollbar-track { background-color: transparent; }
+        .carrusel-miniaturas::-webkit-scrollbar-thumb { background-color: #F1E933; border-radius: 2px; }
+        .carrusel-miniaturas { scrollbar-width: thin; scrollbar-color: #F1E933 transparent; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .bullet-yellow li::before {
+            content: "•"; color: #F1E933; font-weight: bold; display: inline-block; width: 1em; margin-left: -1em;
+        }
+
+        @keyframes latido-suave {
+            0%, 100% { transform: scale(1) translateZ(0); opacity: 0.8; }
+            50% { transform: scale(1.05) translateZ(0); opacity: 1; }
+        }
+        .animate-latido {
+            animation: latido-suave 2s ease-in-out infinite;
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .fade-out-splash {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+        }
+
+        /* Carruseles centrados y navegación por tarjetas */
+        .carrusel-principal { scroll-padding-inline: 50%; }
+        .carrusel-principal > article { scroll-snap-align: center; }
+        @media (max-width: 767px) {
+            #modal-contacto { align-items:flex-start !important; padding:12px !important; }
+            #modal-contacto > div { width:100% !important; max-height:calc(100dvh - 24px) !important; overflow-y:auto !important; margin:0 auto !important; padding:20px 16px !important; }
+            #modal-contacto h3 { font-size:1.65rem !important; padding-right:2rem; }
+            #modal-contacto #form-contacto { gap:14px !important; }
+            #modal-contacto #form-contacto input, #modal-contacto #form-contacto textarea { min-width:0; font-size:16px; }
+            #modal-contacto #form-contacto button { padding-top:13px !important; padding-bottom:13px !important; }
+            #img-seccion-sin-balon,#img-seccion-cultura { width:100% !important; height:100% !important; min-height:100% !important; max-height:none !important; object-fit:cover !important; flex:1 1 100% !important; }
+            div:has(> #img-seccion-sin-balon),div:has(> #img-seccion-cultura) { height: min(72vw, 420px) !important; min-height:260px !important; align-items:stretch !important; }
+
+            .carrusel-principal { gap:14px !important; padding-left:9vw !important; padding-right:9vw !important; scroll-snap-type:x mandatory !important; scroll-behavior:smooth; }
+            .carrusel-principal > article { flex:0 0 82vw !important; width:82vw !important; max-width:380px; scroll-snap-align:center !important; scroll-snap-stop:always; }
+            #prev-main,#next-main,#prev-destacadas,#next-destacadas { display:none !important; }
+            .footer-slogan-band { width:calc(100% - 24px) !important; max-width:100% !important; margin:0 12px !important; padding:14px 12px !important; transform:none !important; }
+            .footer-slogan-band h3 { white-space:normal !important; overflow-wrap:anywhere; line-height:1.25 !important; letter-spacing:.08em !important; font-size:clamp(13px,3.8vw,20px) !important; }
+            #img-seccion-sin-balon,#img-seccion-cultura { display:block !important; width:100% !important; height:auto !important; max-height:70vh !important; object-fit:contain !important; position:static !important; opacity:1 !important; filter:none !important; transform:none !important; }
+            div:has(> #img-seccion-sin-balon),div:has(> #img-seccion-cultura) { height:auto !important; min-height:0 !important; align-items:flex-start !important; }
+            div:has(> #img-seccion-sin-balon),div:has(> #img-seccion-cultura) img { flex:none !important; }
+            div:has(> #img-seccion-sin-balon),div:has(> #img-seccion-cultura) { overflow:hidden; }
+        }
+        @media (min-width:768px) and (max-width:1100px) {
+            #header-logo-container { flex:0 1 175px !important; min-width:145px; }
+            #header-logo-container img { width:100%; max-width:175px; height:auto; }
+            #nav-links-container { flex:1 1 auto !important; min-width:0; }
+            #nav-links-normal { gap:.15rem !important; }
+            #nav-links-normal a,#nav-links-normal button { padding-left:.45rem !important; padding-right:.45rem !important; font-size:.82rem !important; white-space:nowrap; }
+            #header-social-container { flex:0 0 auto !important; gap:.45rem !important; padding-left:.25rem !important; padding-right:0 !important; }
+            #header-social-container > span { display:none; }
+            #header-social-container svg { width:17px; height:17px; }
+        }
+        @media (min-width:1101px) {
+            #header-logo-container { flex:0 1 250px; min-width:190px; }
+            #header-logo-container img { max-width:100%; height:auto; }
+            #nav-links-container { flex:1 1 auto; min-width:0; }
+        }
+        /* Contenido adaptable a resoluciones de escritorio */
+        @media (min-width: 1200px) {
+            .max-w-\[1600px\] { max-width: min(98vw, 1900px) !important; }
+            .max-w-\[95\%\] { max-width: 98vw !important; }
+        }
+        @media (min-width: 1600px) {
+            .max-w-\[1600px\] { max-width: min(97vw, 2100px) !important; }
+        }
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .max-w-\[1600px\], .max-w-\[95\%\] { max-width: 97vw !important; }
+        }
+    </style>
+
+<style id="responsive-contact-and-section-images-fix">
+@media (max-width:767px) {
+  #modal-contacto { align-items:flex-start !important; justify-content:center !important; padding:12px !important; overflow-y:auto !important; }
+  #modal-contacto > div { box-sizing:border-box; width:100% !important; max-height:calc(100dvh - 24px) !important; overflow-y:auto !important; overscroll-behavior:contain; margin:0 auto !important; padding:20px 16px !important; }
+  #modal-contacto #form-contacto { display:flex; flex-direction:column; gap:14px !important; }
+  #modal-contacto #form-contacto input, #modal-contacto #form-contacto textarea { box-sizing:border-box; width:100%; min-width:0; font-size:16px; }
+  #img-seccion-sin-balon,#img-seccion-cultura { display:block !important; box-sizing:border-box; width:100% !important; height:100% !important; min-height:100% !important; max-height:none !important; object-fit:cover !important; flex:1 1 100% !important; position:static !important; }
+  div:has(> #img-seccion-sin-balon),div:has(> #img-seccion-cultura) { box-sizing:border-box; width:100% !important; height:min(72vw,420px) !important; min-height:260px !important; max-height:none !important; align-items:stretch !important; overflow:hidden !important; }
+}
+</style>
+
+<style id="contact-modal-no-visible-scrollbar">
+/* Modal de contacto: sin barra visible y con desplazamiento solo cuando la pantalla no permite mostrarlo completo */
+#modal-contacto { box-sizing:border-box !important; align-items:center !important; justify-content:center !important; overflow:hidden !important; padding:16px !important; }
+#modal-contacto > div { box-sizing:border-box !important; width:min(100%, 32rem) !important; max-height:calc(100dvh - 32px) !important; overflow-y:auto !important; overflow-x:hidden !important; overscroll-behavior:contain; scrollbar-width:none !important; -ms-overflow-style:none !important; padding:clamp(18px, 2.2vh, 28px) clamp(18px, 2vw, 30px) !important; margin:0 auto !important; }
+#modal-contacto > div::-webkit-scrollbar, #modal-contacto::-webkit-scrollbar { display:none !important; width:0 !important; height:0 !important; }
+#modal-contacto h3 { margin-bottom:6px !important; }
+#modal-contacto h3 + p { margin-bottom:12px !important; }
+#modal-contacto > div > .mb-7 { margin-bottom:14px !important; padding:10px 14px !important; }
+#modal-contacto #form-contacto > div { margin-top:12px !important; }
+#modal-contacto #form-contacto > div:first-child { margin-top:0 !important; }
+#modal-contacto #form-contacto label { margin-bottom:5px !important; }
+#modal-contacto #form-contacto input, #modal-contacto #form-contacto textarea { padding-top:10px !important; padding-bottom:10px !important; }
+#modal-contacto #form-contacto textarea { height:88px !important; min-height:88px !important; }
+#modal-contacto #form-contacto button { padding-top:12px !important; padding-bottom:12px !important; }
+@media (max-height:760px) { #modal-contacto > div { padding-top:14px !important; padding-bottom:14px !important; } #modal-contacto > div > .mb-7 { margin-bottom:10px !important; } #modal-contacto #form-contacto > div { margin-top:8px !important; } #modal-contacto #form-contacto textarea { height:66px !important; min-height:66px !important; } }
+@media (max-width:767px) { #modal-contacto { align-items:center !important; overflow:hidden !important; padding:12px !important; } #modal-contacto > div { width:100% !important; max-height:calc(100dvh - 24px) !important; padding:18px 16px !important; } #modal-contacto #form-contacto textarea { height:82px !important; min-height:82px !important; } }
+
+</style>
+
+<style id="caricature-interaction-styles">
+/* La imagen vive en una capa hermana: el fondo del panel/footer se pinta por delante. */
+.caricature-intro-wrap,
+.caricature-footer-wrap {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+}
+.caricature-trigger-intro {
+  position: relative !important;
+  z-index: 2 !important;
+  isolation: isolate;
+  background-color: #09090b; /* Fondo opaco; JS aplica el color alterno dinámico */
+  opacity: 1;
+  cursor: pointer;
+  transform-origin: center;
+  transition: transform .24s cubic-bezier(.2,.75,.25,1.2);
+  outline-offset: 5px;
+}
+.caricature-trigger-intro:hover { transform: scale(1.015); }
+.caricature-trigger-footer { position: relative; z-index: 2 !important; }
+.caricature-pop-image {
+  position: absolute;
+  display: none;
+  height: auto;
+  object-fit: contain;
+  z-index: 1 !important;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  filter: drop-shadow(0 8px 10px rgba(0,0,0,.32));
+  will-change: transform, opacity;
+}
+.caricature-intro-wrap > .caricature-pop-image {
+  right: clamp(10px, 1.8vw, 20px);
+  bottom: 100%;
+  width: clamp(95px, 13.5vw, 165px);
+  transform: translateY(15%) scale(1);
+  transform-origin: 50% 100%;
+}
+.caricature-footer-wrap > .caricature-pop-image {
+  left: 50%;
+  bottom: 100%;
+  width: clamp(82px, 11.5vw, 143px);
+  transform: translate(-50%, 15%) scale(1);
+  transform-origin: 50% 100%;
+}
+/* El propio panel/footer tiene una capa superior opaca que oculta la parte solapada. */
+.caricature-intro-wrap > .caricature-trigger-intro { z-index: 2 !important; position:relative !important; background-color:#09090b; }
+#main-footer { position: relative; z-index: 2 !important; overflow: visible !important; }
+.caricature-trigger-intro .caricature-pop-image.is-visible,
+.caricature-intro-wrap > .caricature-pop-image.is-visible {
+  display: block; visibility: visible;
+  animation: caricatureSpringUpCard 2.05s cubic-bezier(.2,.78,.22,1) both;
+}
+.caricature-footer-wrap > .caricature-pop-image.is-visible {
+  display: block; visibility: visible;
+  animation: caricatureSpringUpFooter 2.05s cubic-bezier(.2,.78,.22,1) both;
+}
+.caricature-intro-wrap > .caricature-pop-image.is-hiding {
+  display: block; visibility: visible;
+  animation: caricatureSpringDownCard 1.05s cubic-bezier(.45,0,.75,.4) both;
+}
+.caricature-footer-wrap > .caricature-pop-image.is-hiding {
+  display: block; visibility: visible;
+  animation: caricatureSpringDownFooter 1.05s cubic-bezier(.45,0,.75,.4) both;
+}
+/* Entrada elástica controlada: asoma un 95% como máximo y termina con un 85% visible. */
+@keyframes caricatureSpringUpCard {
+  0%   { opacity:0; transform:translateY(100%) scale(.94) }
+  38%  { opacity:1; transform:translateY(5%) scale(1.015) }
+  54%  { opacity:1; transform:translateY(22%) scale(.985) }
+  68%  { opacity:1; transform:translateY(10%) scale(1.008) }
+  82%  { opacity:1; transform:translateY(17%) scale(.995) }
+  92%  { opacity:1; transform:translateY(13%) scale(1.003) }
+  100% { opacity:1; transform:translateY(15%) scale(1) }
+}
+@keyframes caricatureSpringUpFooter {
+  0%   { opacity:0; transform:translate(-50%,100%) scale(.94) }
+  38%  { opacity:1; transform:translate(-50%,5%) scale(1.015) }
+  54%  { opacity:1; transform:translate(-50%,22%) scale(.985) }
+  68%  { opacity:1; transform:translate(-50%,10%) scale(1.008) }
+  82%  { opacity:1; transform:translate(-50%,17%) scale(.995) }
+  92%  { opacity:1; transform:translate(-50%,13%) scale(1.003) }
+  100% { opacity:1; transform:translate(-50%,15%) scale(1) }
+}
+@keyframes caricatureSpringDownCard {
+  0%   { opacity:1; transform:translateY(15%) scale(1) }
+  28%  { opacity:1; transform:translateY(8%) scale(1.01) }
+  100% { opacity:0; transform:translateY(100%) scale(.94) }
+}
+@keyframes caricatureSpringDownFooter {
+  0%   { opacity:1; transform:translate(-50%,15%) scale(1) }
+  28%  { opacity:1; transform:translate(-50%,8%) scale(1.01) }
+  100% { opacity:0; transform:translate(-50%,100%) scale(.94) }
+}
+@media(max-width:640px) {
+ .caricature-intro-wrap > .caricature-pop-image {right:10px;width:min(34vw,122px)}
+ .caricature-footer-wrap > .caricature-pop-image {width:min(33vw,122px)}
+}
+@media(prefers-reduced-motion:reduce) {
+ .caricature-trigger-intro {transition:none}
+ .caricature-pop-image.is-visible,.caricature-pop-image.is-hiding {animation-duration:.01ms!important}
+}
+</style>
+
+</head>
+<body data-page="album" class="bg-zinc-950 text-gray-200 font-sans antialiased flex flex-col min-h-screen">
+    <div id="pantalla-carga" class="fixed inset-0 bg-zinc-950 z-[9999] flex flex-col items-center justify-center">
+        <img src="./assets/LogoWebTuFotoEnFoco.png" alt="TUFOTOENFOCO" class="h-16 md:h-20 w-auto animate-latido mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+        <div class="w-32 h-1 bg-zinc-800 rounded-full overflow-hidden"><div class="h-full bg-brand-accent w-1/3 rounded-full animate-[ping_1.5s_cubic-bezier(0,0,0.2,1)_infinite] mx-auto"></div></div>
+    </div>
+
+    <!-- CONTENEDOR DONDE SE INYECTARÁ EL HEADER -->
+    <div id="header-placeholder"></div>
+
+    <div id="estado-mensaje" class="hidden flex-grow flex-col items-center justify-center min-h-[60vh] text-center px-6 py-20 bg-zinc-950 relative z-20">
+        <div class="w-16 h-16 bg-brand-accent rounded-full flex items-center justify-center text-black mb-6 animate-bounce shadow-[0_0_20px_rgba(241,233,51,0.3)]">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </div>
+        <h2 id="estado-titulo" class="text-4xl md:text-6xl font-black text-white tracking-tighter mb-4 uppercase drop-shadow-md"></h2>
+        <p id="estado-desc" class="text-gray-400 text-lg md:text-xl max-w-xl font-light leading-relaxed"></p>
+    </div>
+
+    <main id="main-content-sections" class="hidden flex-grow w-full overflow-hidden flex-col">
+        
+        <section class="relative bg-black overflow-hidden border-b border-zinc-800 min-h-[calc(100vh-96px)] flex">
+            <div class="absolute inset-0">
+                <img id="img-hero-fondo" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" class="w-full h-full object-cover opacity-[64%] transition-opacity duration-1000">
+                <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-black/45 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-black/72 via-black/36 to-transparent"></div>
+            </div>
+            <div class="relative max-w-[95%] 2xl:max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-24 flex flex-col items-start justify-start">
+                <div class="flex items-center gap-4 mb-6 mt-4">
+                    <div class="w-8 h-px bg-brand-accent"></div>
+                    <span class="text-brand-accent font-bold tracking-widest uppercase text-sm">Fotografía deportiva • Badajoz</span>
+                </div>
+                <h1 class="text-5xl sm:text-7xl lg:text-8xl font-extrabold text-white tracking-tighter mb-2 drop-shadow-lg leading-none">
+                    CAPTURANDO<br>MOMENTOS.
+                </h1>
+                <h1 class="text-5xl sm:text-7xl lg:text-8xl font-extrabold text-brand-accent tracking-tighter mb-8 drop-shadow-lg leading-none">
+                    CREANDO<br>RECUERDOS.
+                </h1>
+                <p class="mt-4 text-lg sm:text-xl text-gray-300 max-w-2xl drop-shadow font-light mb-10">
+                    El instante pasa, la emoción se queda.
+                </p>
+                <a href="galerias.html?tipo=categorias" class="inline-flex items-center justify-center px-8 py-4 bg-brand-accent text-black text-xs font-bold uppercase tracking-widest hover:bg-white hover:scale-105 transition-all duration-300 cursor-pointer rounded-sm">
+                    Explorar categorías
+                </a>
+            </div>
+        </section>
+
+        <section class="alternating-section py-16 lg:py-24 border-b border-zinc-800 transition-colors duration-300">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="caricature-trigger caricature-trigger-intro border border-brand-highlight p-8 sm:p-12 text-base sm:text-lg text-gray-200 leading-relaxed rounded-2xl" role="button" tabindex="0" aria-expanded="false" aria-label="Mostrar caricatura de TUFOTOENFOCO">
+                    <ul class="pl-4 bullet-yellow space-y-4">
+                        <li>En TUFOTO<span class="text-brand-highlight font-bold">ENFOCO</span> documento la pasión del deporte para transformarla en recuerdos imborrables.</li>
+                        <li>Explora las galerías, encuéntrate en la acción y vuelve a sentir la emoción de cada instante.</li>
+                        <li>En eventos seleccionados, ofrezco descargas gratuitas optimizadas (con marca de agua).</li>
+                        <li>En galerías habilitadas, tienes la opción de <span class="border-b border-brand-highlight pb-0.5">adquirir tus fotografías en alta resolución</span> y libres de logotipos.</li>
+                        <li>Tu compra es el motor que me permite mantener esta plataforma y seguir a pie de pista.</li>
+                        <li>Gracias por valorar, respetar y apoyar mi trabajo fotográfico.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="alternating-section py-16 border-b border-zinc-800 transition-colors duration-300">
+            <div class="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-end mb-10 border-b border-zinc-800 pb-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white tracking-tight">Últimas Galerías</h2>
+                        <p class="text-gray-400 mt-2">Explora los reportajes más recientes</p>
+                    </div>
+                </div>
+
+                <div class="relative w-full group/slider">
+                    <button id="prev-main" style="display: none;" class="absolute left-0 md:-left-3 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center bg-brand-dark border-2 border-brand-accent text-brand-accent p-2 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.8)] hover:bg-brand-accent hover:text-black transition-all focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15.75 19.5L8.25 12l7.5-7.5"></path></svg>
+                    </button>
+                    
+                    <div id="contenedor-galerias" class="flex overflow-x-auto gap-6 lg:gap-8 snap-x snap-mandatory carrusel-scroll carrusel-principal py-4 w-full px-2 min-h-[350px] transition-all duration-300">
+                        <p id="mensaje-carga-main" class="text-brand-accent text-center py-10 font-bold animate-pulse w-full">Cargando galerías...</p>
+                    </div>
+
+                    <button id="next-main" style="display: none;" class="absolute right-0 md:-right-3 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center bg-brand-dark border-2 border-brand-accent text-brand-accent p-2 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.8)] hover:bg-brand-accent hover:text-black transition-all focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8.25 4.5l7.5 7.5-7.5 7.5"></path></svg>
+                    </button>
+                </div>
+                
+                <div class="mt-12 flex justify-center w-full">
+                    <button id="btn-cargar-mas" onclick="window.location.href='galerias.html?tipo=categorias'" style="display: none;" class="inline-flex items-center justify-center px-8 py-3 border border-zinc-700 shadow-sm text-base font-medium rounded-full text-white bg-brand-base hover:bg-zinc-800 hover:border-brand-accent hover:text-brand-accent transition-colors focus:outline-none cursor-pointer">
+                        Más galerías
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="seccion-destacadas" class="alternating-section py-16 border-b border-zinc-800 transition-colors duration-300" style="display: none;">
+            <div class="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-end mb-10 border-b border-zinc-800 pb-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white tracking-tight">Galerías Destacadas</h2>
+                        <p class="text-gray-400 mt-2">Los mejores reportajes de la temporada</p>
+                    </div>
+                </div>
+
+                <div class="relative w-full group/slider">
+                    <button id="prev-destacadas" style="display: none;" class="absolute left-0 md:-left-3 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center bg-brand-dark border-2 border-brand-accent text-brand-accent p-2 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.8)] hover:bg-brand-accent hover:text-black transition-all focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15.75 19.5L8.25 12l7.5-7.5"></path></svg>
+                    </button>
+                    
+                    <div id="contenedor-destacadas" class="flex overflow-x-auto gap-6 lg:gap-8 snap-x snap-mandatory carrusel-scroll carrusel-principal py-4 w-full px-2 min-h-[350px] transition-all duration-300"></div>
+
+                    <button id="next-destacadas" style="display: none;" class="absolute right-0 md:-right-3 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center bg-brand-dark border-2 border-brand-accent text-brand-accent p-2 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.8)] hover:bg-brand-accent hover:text-black transition-all focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8.25 4.5l7.5 7.5-7.5 7.5"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="alternating-section py-24 lg:py-32 border-b border-zinc-800 transition-colors duration-300">
+            <div class="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row items-stretch gap-12 lg:gap-20">
+                    <div class="w-full lg:w-1/2 flex flex-col justify-between items-start min-h-[400px]">
+                        <div>
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="w-8 h-px bg-brand-accent"></div>
+                                <span class="text-brand-accent text-xs font-bold tracking-widest uppercase">Otra forma de mirar el deporte</span>
+                            </div>
+                            <h2 class="text-7xl sm:text-8xl font-black text-white tracking-tight flex items-baseline">
+                                SIN BALÓN <span class="text-brand-accent ml-2">.</span>
+                            </h2>
+                        </div>
+                        <div class="flex flex-col justify-center flex-grow py-8 gap-3 w-full max-w-xl">
+                            <p class="text-2xl sm:text-3xl text-gray-200 font-bold leading-tight">
+                                La tensión en el banquillo. La voz de la grada. Un abrazo al final.
+                            </p>
+                            <p class="text-base sm:text-lg text-gray-400">
+                                Los momentos que también forman parte del juego.
+                            </p>
+                        </div>
+                        <a href="sin-balon.html" class="inline-flex items-center justify-center px-8 py-4 bg-transparent border border-zinc-700 text-white text-xs font-bold uppercase tracking-widest hover:border-brand-accent hover:text-brand-accent transition-colors cursor-pointer rounded-sm">
+                            Descubrir sin balón
+                        </a>
+                    </div>
+                    <div class="w-full lg:w-1/2 flex items-stretch">
+                        <div class="relative w-full h-full min-h-[400px] rounded-xl overflow-hidden shadow-2xl border-4 border-zinc-800 bg-brand-base flex items-center justify-center group cursor-pointer">
+                            <img id="img-seccion-sin-balon" onclick="abrirModalImagenSimple(this.src)" src="" alt="Momento Sin Balón" class="opacity-0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="alternating-section py-16 lg:py-24 border-b border-zinc-800 transition-colors duration-300">
+            <div class="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
+                    <div class="w-full lg:w-1/2">
+                        <h2 class="text-5xl sm:text-6xl lg:text-7xl font-black text-white uppercase tracking-tighter leading-none">
+                            TU ESFUERZO. TU HISTORIA. TU FOTO.
+                        </h2>
+                    </div>
+                    <div class="w-full lg:w-1/2">
+                        <p class="text-lg sm:text-xl lg:text-2xl text-gray-400 leading-relaxed max-w-xl transform transition-transform duration-300 hover:scale-105 inline-block cursor-default">
+                            El gol, la última zancada, esa mirada antes de salir. Hay momentos que merecen quedarse contigo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="alternating-section py-24 lg:py-32 border-b border-zinc-800 transition-colors duration-300">
+            <div class="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row items-stretch gap-12 lg:gap-20">
+                    <div class="w-full lg:w-1/2 flex flex-col justify-between items-start min-h-[400px]">
+                        <div>
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="w-8 h-px bg-brand-highlight"></div>
+                                <span class="text-brand-highlight text-xs font-bold tracking-widest uppercase">Arte, tradición y emociones</span>
+                            </div>
+                            <h2 class="text-7xl sm:text-8xl font-black text-white tracking-tight uppercase flex items-baseline">
+                                Nuestra Cultura
+                            </h2>
+                        </div>
+                        <div class="flex flex-col justify-center flex-grow py-8 gap-3 w-full max-w-xl">
+                            <p class="text-2xl sm:text-3xl text-gray-200 font-bold leading-tight">
+                                Tradiciones, arte y momentos que forman parte de nuestra historia.
+                            </p>
+                            <p class="text-base sm:text-lg text-gray-400">
+                                Descubre nuestras galerías de Semana Santa, Carnaval, Almossassa, conciertos, teatro, folklore y Noche en Blanco.
+                            </p>
+                        </div>
+                        <a href="cultura.html" class="inline-flex items-center justify-center px-8 py-4 bg-transparent border border-zinc-700 text-white text-xs font-bold uppercase tracking-widest hover:border-brand-highlight hover:text-brand-highlight transition-colors cursor-pointer rounded-sm">
+                            Explorar cultura
+                        </a>
+                    </div>
+                    <div class="w-full lg:w-1/2 flex items-stretch">
+                        <div class="relative w-full h-full min-h-[400px] rounded-xl overflow-hidden shadow-2xl border-4 border-zinc-800 bg-brand-base flex items-center justify-center group cursor-pointer">
+                            <img id="img-seccion-cultura" onclick="abrirModalImagenSimple(this.src)" src="" alt="Nuestra Cultura" class="opacity-0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="alternating-section py-16 flex justify-center items-center overflow-hidden transition-colors duration-300">
+            <div class="bg-brand-highlight footer-slogan-band px-6 sm:px-10 py-4 sm:py-6 shadow-[0_0_20px_rgba(241,233,51,0.2)] cursor-default mx-4 max-w-max flex justify-center items-center rounded-sm">
+                <h3 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-black uppercase m-0 leading-tight text-center tracking-widest">
+                    * BADAJOZ ES DEPORTE * BADAJOZ ES MÁS
+                </h3>
+            </div>
+        </section>
+    </main>
+
+    <main id="dynamic-page" class="hidden bg-zinc-950"></main>
+
+    <!-- CONTENEDOR DONDE SE INYECTARÁ EL FOOTER -->
+    <div id="footer-placeholder"></div>
+
+    <style>
+        .tfe-buy-top { display: none !important; }
+        .tfe-bottom-action { display: none !important; }
+        .tfe-bottom-action.is-visible { display: inline-flex !important; }
+        .tfe-mobile-action { display: none !important; }
+        @media (min-width: 768px) {
+            .tfe-buy-top.is-visible { display: inline-flex !important; }
+        }
+        @media (max-width: 767px) {
+            .tfe-mobile-action.is-visible { display: inline-flex !important; }
+        }
+    </style>
+
+    <div id="modal-galeria-vista" class="fixed inset-0 z-[120] bg-black/95 backdrop-blur-md hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-brand-base w-full max-w-[96vw] h-[94vh] md:h-[92vh] rounded-2xl flex flex-col relative overflow-hidden shadow-2xl border border-zinc-800 transform scale-95 transition-transform duration-300" id="modal-galeria-content">
+            <button id="btn-cerrar-galeria" class="absolute top-4 right-4 z-50 bg-black/50 hover:bg-brand-accent hover:text-black text-white rounded-full p-2 transition-colors focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="p-6 md:p-8 border-b border-zinc-800 shrink-0 bg-brand-base relative z-40 pr-16">
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                    <a id="modal-btn-comprar-top" href="#" target="_blank" rel="noopener noreferrer" class="tfe-buy-top items-center justify-center px-4 py-2 bg-brand-accent hover:bg-white text-black text-xs font-bold uppercase tracking-widest rounded-md transition-colors">Tu recuerdo sin logo · descárgalo aquí</a>
+                    <a id="modal-btn-ver-album" href="album.html" class="inline-flex w-fit items-center justify-center px-4 py-2 border border-zinc-600 hover:border-brand-accent hover:text-brand-accent text-white text-xs font-bold uppercase tracking-widest rounded-md transition-colors">Ver álbum</a>
+                    <a id="modal-btn-comprar-mobile" href="#" target="_blank" rel="noopener noreferrer" aria-label="Comprar recuerdo sin logo" title="Comprar recuerdo sin logo" class="tfe-mobile-action items-center justify-center w-12 h-[34px] bg-brand-accent text-black rounded-md shadow transition-transform active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </a>
+                    <button id="modal-btn-descargar-mobile" type="button" aria-label="Descarga gratis con logo" title="Descarga gratis con logo" class="tfe-mobile-action items-center justify-center w-12 h-[34px] bg-zinc-600 hover:bg-zinc-500 text-white rounded-md shadow transition-transform active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    </button>
+                </div>
+                <h2 id="modal-gal-titulo" class="text-2xl md:text-3xl font-black text-white uppercase tracking-tight"></h2>
+                <p id="modal-gal-desc" class="text-gray-400 text-sm md:text-base mt-2 line-clamp-2 md:line-clamp-none"></p>
+                <p id="modal-gal-resultados" class="hidden text-brand-accent text-sm md:text-base mt-2"></p>
+            </div>
+            <div class="flex flex-col lg:flex-row flex-grow min-h-0 bg-brand-base relative">
+                <div class="flex-grow relative flex items-center justify-center bg-brand-base overflow-hidden group">
+                    <img id="modal-gal-img-principal" src="" class="w-full h-full object-contain relative z-10 select-none transition-opacity duration-300">
+                    <button id="modal-gal-prev" class="absolute left-4 z-50 bg-black/60 border-2 border-brand-accent text-brand-accent p-2 md:p-3 rounded-full hover:bg-brand-accent hover:text-black transition-all focus:outline-none opacity-0 group-hover:opacity-100 hidden md:block">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15.75 19.5L8.25 12l7.5-7.5"></path></svg>
+                    </button>
+                    <button id="modal-gal-next" class="absolute right-4 z-50 bg-black/60 border-2 border-brand-accent text-brand-accent p-2 md:p-3 rounded-full hover:bg-brand-accent hover:text-black transition-all focus:outline-none opacity-0 group-hover:opacity-100 hidden md:block">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8.25 4.5l7.5 7.5-7.5 7.5"></path></svg>
+                    </button>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-30 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                        <div class="text-white">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg class="w-4 h-4 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <span id="modal-gal-lugar" class="font-bold text-sm md:text-base"></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span id="modal-gal-fecha" class="text-xs md:text-sm"></span>
+                            </div>
+                        </div>
+                        <div class="hidden md:flex gap-2 w-full sm:w-auto">
+                            <button id="modal-btn-descargar" class="tfe-bottom-action flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-base border border-zinc-700 hover:border-white text-white text-xs font-bold uppercase tracking-widest rounded-md transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Descarga gratis con logo
+                            </button>
+                            <a id="modal-btn-comprar" href="#" target="_blank" class="tfe-bottom-action flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-accent hover:bg-white text-black text-xs font-bold uppercase tracking-widest rounded-md transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                Tu recuerdo sin logo · descárgalo aquí
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-72 bg-brand-base border-t lg:border-t-0 lg:border-l border-zinc-800 flex-shrink-0 p-3 flex flex-row lg:flex-col overflow-x-auto overflow-y-auto overscroll-contain gap-3 carrusel-miniaturas h-32 lg:h-auto">
+                    <div id="modal-gal-thumbs-container" class="flex flex-row lg:flex-col gap-3 w-max lg:w-full"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-descarga-opciones" class="fixed inset-0 z-[400] bg-black/95 backdrop-blur-md hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-brand-base w-full max-w-xl rounded-2xl border border-zinc-800 shadow-2xl p-7 md:p-10 text-center relative transform scale-95 transition-transform duration-300">
+            <h2 class="text-2xl md:text-3xl font-black text-white mb-3">Tu recuerdo sin logo por <span class="text-brand-accent">3€</span></h2>
+            <p class="text-gray-300 mb-5">Más recuerdos, mejor precio:</p>
+            <div class="space-y-2 text-gray-200 mb-6"><p>2 fotos <span class="text-brand-accent font-bold">→ 10% de descuento</span></p><p>3 fotos <span class="text-brand-accent font-bold">→ 15% de descuento</span></p><p>4 fotos <span class="text-brand-accent font-bold">→ 20% de descuento</span></p><p>5 fotos <span class="text-brand-accent font-bold">→ 25% de descuento</span></p></div>
+            <p class="text-gray-400 mb-7">Gracias por tu apoyo</p>
+            <div class="flex flex-col gap-3">
+                <a id="descarga-opcion-compra" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex justify-center items-center px-5 py-3 bg-brand-accent hover:bg-white text-black text-xs sm:text-sm font-bold uppercase tracking-widest rounded-md transition-colors">Tu recuerdo sin logo · cómpralo aquí</a>
+                <button id="descarga-opcion-gratis" class="inline-flex justify-center items-center px-5 py-3 border border-brand-accent text-brand-accent hover:bg-brand-accent hover:text-black text-xs sm:text-sm font-bold uppercase tracking-widest rounded-md transition-colors">Continuar con la descarga gratis</button>
+                <button id="descarga-opcion-volver" class="self-center px-5 py-2 text-sm text-gray-400 hover:text-white transition-colors">Volver</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-imagen-simple" class="fixed inset-0 z-[130] bg-black/95 backdrop-blur-md hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <button id="btn-cerrar-imagen-simple" class="absolute top-4 right-4 z-50 bg-black/50 hover:bg-brand-accent hover:text-black text-white rounded-full p-2 transition-colors focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <img id="modal-imagen-simple-src" src="" class="max-h-[90vh] max-w-[95vw] object-contain shadow-2xl transform scale-95 transition-transform duration-300">
+    </div>
+
+    <div id="contacto-component"></div>
+    <script>
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8mylASNDJZjSrcN_rayfjN38bWFixXghqU5sP86QVUDbGWHSK_0gL0-RBlFezr07X/exec';
+        const DATOS_JSON_URL = './datos.json';
+        const placeholderImagen = "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20600%20400%27%3E%3Crect%20width%3D%27600%27%20height%3D%27400%27%20fill%3D%27%2352525b%27%2F%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23a1a1aa%27%20stroke-width%3D%2712%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20transform%3D%27translate%28210%20125%29%27%3E%3Cpath%20d%3D%27M160%20150H20a18%2018%200%200%201-18-18V45a18%2018%200%200%201%2018-18h34L76%202h52l22%2025h10a18%2018%200%200%201%2018%2018v87a18%2018%200%200%201-18%2018Z%27%2F%3E%3Ccircle%20cx%3D%2790%27%20cy%3D%2788%27%20r%3D%2735%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E";
+        const svgCamara = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233f3f46' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/%3E%3Ccircle cx='12' cy='13' r='4'/%3E%3C/svg%3E";
+
+        window.eventosGlobal = {};
+        let arrayFotosActuales = [];
+        let indexFotoActual = 0;
+
+
+        // La columna G de WEB se publica como Fecha (dd/MM/yyyy o ISO).
+        // Orden descendente: primero la galería con fecha más reciente.
+        function fechaGaleriaMs(ev) {
+            const value = ev && (ev.Fecha ?? ev.fecha ?? ev.G);
+            if (value instanceof Date) return value.getTime();
+            const raw = String(value ?? '').trim();
+            if (!raw) return 0;
+            let m = raw.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);
+            if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1])).getTime();
+            m = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+            if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime();
+            const parsed = Date.parse(raw);
+            return Number.isFinite(parsed) ? parsed : 0;
+        }
+        function compararFechaDescendente(a, b) {
+            return fechaGaleriaMs(b) - fechaGaleriaMs(a);
+        }
+        function fechaRecienteCategoria(cat, galerias) {
+            return galerias.reduce((max, ev) =>
+                albumPerteneceCategoria(ev, cat) ? Math.max(max, fechaGaleriaMs(ev)) : max, 0);
+        }
+
+        function checkIsTrue(val) {
+            if (val === true) return true;
+            return ['TRUE', '1', 'SI', 'SÍ', 'YES'].includes(String(val ?? '').trim().toUpperCase());
+        }
+        function eventoTieneMarcaAgua(evento) {
+            if (!evento || typeof evento !== 'object') return false;
+            const clave = Object.keys(evento).find(k => String(k).trim().toLowerCase().replace(/[\s_-]/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '') === 'marcaagua');
+            return clave !== undefined && checkIsTrue(evento[clave]);
+        }
+        function codificarIdAlbum(id) {
+            const encoded = btoa(unescape(encodeURIComponent(String(id ?? ''))))
+                .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+            return `tf_${encoded}`;
+        }
+        function decodificarIdAlbum(valor) {
+            const raw = String(valor ?? '');
+            if (!raw.startsWith('tf_')) return raw; // Compatibilidad con enlaces antiguos.
+            try {
+                const base64 = raw.slice(3).replace(/-/g, '+').replace(/_/g, '/');
+                return decodeURIComponent(escape(atob(base64)));
+            } catch (_) {
+                return '';
+            }
+        }
+        const NETLIFY_IMAGE_BASE = 'https://tufotoenfoco-galeria.tufotoenfoco.workers.dev/';
+        function urlImagenGaleria(url, evento) {
+            const source = String(url || '').trim();
+            if (!source || !/^https?:\/\//i.test(source) || !eventoTieneMarcaAgua(evento)) return source;
+            let endpoint = 'imagen-externa';
+            try {
+                const parsed = new URL(source);
+                if (parsed.hostname.toLowerCase() === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
+            } catch (_) { return source; }
+            const encodedSource = btoa(unescape(encodeURIComponent(source)))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/g, '');
+            return `${NETLIFY_IMAGE_BASE}${endpoint}?watermark=1&url64=${encodedSource}`;
+        }
+
+        function urlDescargaFoto(url, evento) {
+            const source = String(url || '').trim();
+            if (!source || !/^https?:\/\//i.test(source)) return source;
+            let endpoint = 'imagen-externa';
+            try {
+                const parsed = new URL(source);
+                if (parsed.hostname.toLowerCase() === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
+            } catch (_) { return source; }
+            const encodedSource = btoa(unescape(encodeURIComponent(source)))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/g, '');
+            const watermark = eventoTieneMarcaAgua(evento) ? '&watermark=1' : '';
+            return `${NETLIFY_IMAGE_BASE}${endpoint}?download=1${watermark}&url64=${encodedSource}`;
+        }
+
+
+        function aplicarFondosAlternos() {
+            const sections = document.querySelectorAll('section.alternating-section');
+            let isDark = true; 
+            sections.forEach(sec => {
+                if (window.getComputedStyle(sec).display !== 'none') {
+                    sec.classList.remove('bg-zinc-950', 'bg-[#121212]');
+                    if (isDark) sec.classList.add('bg-zinc-950');
+                    else sec.classList.add('bg-[#121212]');
+                    const introPanel = sec.querySelector('.caricature-trigger-intro');
+                    if (introPanel) introPanel.style.backgroundColor = isDark ? '#121212' : '#09090b';
+                    isDark = !isDark; 
+                }
+            });
+        }
+
+        window.abrirModalImagenSimple = function(srcUrl) {
+            if(!srcUrl || srcUrl.includes("data:image/svg+xml")) return;
+            const modal = document.getElementById('modal-imagen-simple');
+            document.getElementById('modal-imagen-simple-src').src = srcUrl;
+            toggleModal(modal, true);
+        }
+
+        function updateCarouselButtons(sliderId, prevBtnId, nextBtnId) {
+            const slider = document.getElementById(sliderId);
+            const prevBtn = document.getElementById(prevBtnId);
+            const nextBtn = document.getElementById(nextBtnId);
+            if(!slider) return;
+
+            slider.classList.add('flex', 'flex-nowrap');
+
+            if(slider.scrollWidth > slider.clientWidth) {
+                slider.classList.remove('justify-center');
+                slider.classList.add('justify-start');
+
+                const isAtStart = slider.scrollLeft <= 10;
+                const isAtEnd = Math.ceil(slider.scrollLeft + slider.clientWidth) >= slider.scrollWidth - 10;
+
+                if(prevBtn) prevBtn.style.display = isAtStart ? 'none' : 'flex';
+                if(nextBtn) nextBtn.style.display = isAtEnd ? 'none' : 'flex';
+            } else {
+                if(prevBtn) prevBtn.style.display = 'none';
+                if(nextBtn) nextBtn.style.display = 'none';
+                slider.classList.remove('justify-start');
+                slider.classList.add('justify-center');
+            }
+        }
+
+        function inicializarCarruselInteractivos(contenedorId, prevBtnId, nextBtnId) {
+            const slider = document.getElementById(contenedorId);
+            const prevBtn = document.getElementById(prevBtnId);
+            const nextBtn = document.getElementById(nextBtnId);
+            if (!slider) return;
+
+            const getCards = () => Array.from(slider.querySelectorAll(':scope > article'));
+            const moveCarouselToCenteredCard = (direction) => {
+                const cards = getCards();
+                if (!cards.length) return;
+                const sliderRect = slider.getBoundingClientRect();
+                const viewportCenter = sliderRect.left + slider.clientWidth / 2;
+                let currentIndex = 0;
+                let closestDistance = Infinity;
+                cards.forEach((card, index) => {
+                    const rect = card.getBoundingClientRect();
+                    const center = rect.left + rect.width / 2;
+                    const distance = Math.abs(center - viewportCenter);
+                    if (distance < closestDistance) { closestDistance = distance; currentIndex = index; }
+                });
+                const targetIndex = Math.max(0, Math.min(cards.length - 1, currentIndex + direction));
+                const target = cards[targetIndex];
+                const targetRect = target.getBoundingClientRect();
+                const delta = (targetRect.left + targetRect.width / 2) - viewportCenter;
+                slider.scrollTo({ left: slider.scrollLeft + delta, behavior: 'smooth' });
+            };
+
+            const update = () => {
+                const mobile = window.matchMedia('(max-width: 767px)').matches;
+                const overflow = slider.scrollWidth > slider.clientWidth + 2;
+                if (prevBtn) prevBtn.style.display = (!mobile && overflow && slider.scrollLeft > 10) ? 'flex' : 'none';
+                if (nextBtn) nextBtn.style.display = (!mobile && overflow && Math.ceil(slider.scrollLeft + slider.clientWidth) < slider.scrollWidth - 10) ? 'flex' : 'none';
+                slider.classList.toggle('justify-center', !overflow);
+                slider.classList.toggle('justify-start', overflow);
+            };
+
+            if (slider.dataset.carouselInit !== 'true') {
+                slider.dataset.carouselInit = 'true';
+                let isDown = false, startX = 0, initialScroll = 0, isDragging = false;
+                slider.addEventListener('mousedown', e => {
+                    if (e.button !== 0 || window.matchMedia('(max-width: 767px)').matches) return;
+                    isDown = true; isDragging = false; startX = e.pageX; initialScroll = slider.scrollLeft;
+                    slider.style.cursor = 'grabbing';
+                });
+                window.addEventListener('mouseup', () => { isDown = false; slider.style.cursor = ''; });
+                slider.addEventListener('mouseleave', () => { isDown = false; slider.style.cursor = ''; });
+                slider.addEventListener('mousemove', e => {
+                    if (!isDown) return;
+                    const delta = e.pageX - startX;
+                    if (Math.abs(delta) > 6) isDragging = true;
+                    if (isDragging) { e.preventDefault(); slider.scrollLeft = initialScroll - delta; }
+                });
+                slider.addEventListener('click', e => {
+                    if (isDragging) { e.preventDefault(); e.stopPropagation(); isDragging = false; }
+                }, true);
+                slider.addEventListener('scroll', update, { passive: true });
+                window.addEventListener('resize', update);
+            }
+            if (prevBtn && prevBtn.dataset.bound !== 'true') {
+                prevBtn.dataset.bound = 'true';
+                prevBtn.addEventListener('click', () => moveCarouselToCenteredCard(-1));
+            }
+            if (nextBtn && nextBtn.dataset.bound !== 'true') {
+                nextBtn.dataset.bound = 'true';
+                nextBtn.addEventListener('click', () => moveCarouselToCenteredCard(1));
+            }
+            requestAnimationFrame(update);
+        }
+
+        function toggleModal(modal, show) {
+            if (show) {
+                modal.classList.remove('hidden');
+                void modal.offsetWidth; 
+                modal.classList.remove('opacity-0');
+                if(modal.querySelector('div.scale-95')) modal.querySelector('div.scale-95').classList.remove('scale-95');
+                if(modal.querySelector('img.scale-95')) modal.querySelector('img.scale-95').classList.remove('scale-95');
+                document.body.style.overflow = 'hidden'; 
+            } else {
+                modal.classList.add('opacity-0');
+                if(modal.querySelector('div.scale-95') === false && modal.querySelector('div')) modal.querySelector('div').classList.add('scale-95');
+                if(modal.querySelector('img')) modal.querySelector('img').classList.add('scale-95');
+                setTimeout(() => { 
+                    modal.classList.add('hidden'); 
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+        }
+
+        let eventoModalActual = null;
+        let urlCompraActual = '';
+
+        function tfeRegistrarEstadistica(tipo, ev, origen) {
+            if (!ev) return;
+            const id = String(ev.ID_Evento || ev.ID_evento || ev.ID || '').trim();
+            if (!id) return;
+            if (tipo === 'free' && !checkIsTrue(ev.Descarga_Gratis ?? ev.Descarga ?? ev['Descarga gratis'])) return;
+            if (tipo === 'buy' && !/^https?:\/\//i.test(String(ev.Link_Compra || '').trim())) return;
+            const params = new URLSearchParams({ action: 'stats', type: tipo, id, title: String(ev.Titulo || ''), source: String(origen || '') });
+            const beacon = new Image();
+            beacon.src = APPS_SCRIPT_URL + '?' + params.toString() + '&_=' + Date.now();
+        }
+        document.addEventListener('click', function (event) {
+            const link = event.target.closest('#modal-btn-comprar-top, #modal-btn-comprar, #descarga-opcion-compra, .tfe-buy-link');
+            if (!link || link.classList.contains('hidden')) return;
+            if (!/^https?:\/\//i.test(String(link.href || ''))) return;
+            if (typeof eventoModalActual !== 'undefined' && eventoModalActual) tfeRegistrarEstadistica('buy', eventoModalActual, 'web');
+        }, true);
+
+        async function fetchFotosDesdeBackblaze(idEvento) {
+            try {
+                const url = `${APPS_SCRIPT_URL}?action=photos&folder=${encodeURIComponent(idEvento)}&_=${Date.now()}`;
+                const response = await fetch(url, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`Apps Script respondió HTTP ${response.status}`);
+                const data = await response.json();
+                if (data && data.error) throw new Error(data.error);
+                if (!data || !Array.isArray(data.photos)) throw new Error('La respuesta de Apps Script no contiene una lista de fotografías válida.');
+                return data.photos.filter(url => typeof url === 'string' && /^https?:\/\//i.test(url));
+            } catch (e) {
+                console.error('No se pudieron cargar las fotografías desde Backblaze:', e);
+                return [];
+            }
+        }
+        function obtenerNumerosDestacados(ev) {
+            return String(ev.Fotos_Destacadas ?? ev.Fotos_destacadas ?? ev['Fotos destacadas'] ?? '')
+                .split(',').map(v=>parseInt(v.trim(),10)).filter(Number.isFinite);
+        }
+        window.abrirModalGaleria = async function(idEv) {
+            const ev=window.eventosGlobal[idEv]; if(!ev)return;
+            eventoModalActual=ev;
+            tfeRegistrarEstadistica('view', ev, 'vista_previa');
+            const albumLink=document.getElementById('modal-btn-ver-album');
+            if(albumLink) albumLink.href='album.html?id='+codificarIdAlbum(ev.ID_Evento||ev.ID_evento||ev.ID||'');
+            document.getElementById('modal-gal-titulo').textContent=ev.Titulo||'';
+            document.getElementById('modal-gal-desc').textContent=ev.Descripcion_Larga||ev.Descripcion_Corta||'';
+            const resultadosEl=document.getElementById('modal-gal-resultados');
+            if(resultadosEl){resultadosEl.textContent=String(ev.Resultados||'').trim();resultadosEl.classList.toggle('hidden',!resultadosEl.textContent); }
+            document.getElementById('modal-gal-lugar').textContent=ev.Lugar||'';
+            document.getElementById('modal-gal-fecha').textContent=ev.Fecha||'';
+            const free=checkIsTrue(ev.Descarga_Gratis ?? ev.Descarga ?? ev['Descarga gratis']);
+            urlCompraActual=String(ev.Link_Compra||'').trim();
+            const hasLink=/^https?:\/\//i.test(urlCompraActual);
+            document.getElementById('modal-btn-descargar').classList.toggle('is-visible',free);
+            const bottomBuy=document.getElementById('modal-btn-comprar');
+            bottomBuy.classList.toggle('is-visible',hasLink);
+            const topBuy=document.getElementById('modal-btn-comprar-top');
+            topBuy.classList.toggle('is-visible',hasLink); if(hasLink)topBuy.href=urlCompraActual;
+            if(hasLink)bottomBuy.href=urlCompraActual;
+            const mobileBuy=document.getElementById('modal-btn-comprar-mobile');
+            mobileBuy.classList.toggle('is-visible',hasLink); if(hasLink)mobileBuy.href=urlCompraActual;
+            document.getElementById('modal-btn-descargar-mobile').classList.toggle('is-visible',free);
+            toggleModal(document.getElementById('modal-galeria-vista'),true);
+            const main=document.getElementById('modal-gal-img-principal');
+            main.src=svgCamara; main.alt='Cargando fotografía';
+            arrayFotosActuales=[];indexFotoActual=0;
+            document.getElementById('modal-gal-thumbs-container').innerHTML='';
+            const id=ev.ID_Evento||ev.ID_evento||ev.ID||'';
+            const photos=await fetchFotosDesdeBackblaze(id);
+            const nums=obtenerNumerosDestacados(ev);
+            const photoNum=u=>Number(((u.split('/').pop()||'').match(/(\d+)(?=\.[^.]+$)/)||[])[1]||0);
+            const featured=nums.map(n=>photos.find(u=>photoNum(u)===n)).filter(Boolean);
+            const featuredSet=new Set(featured);
+            arrayFotosActuales=[...featured,...photos.filter(u=>!featuredSet.has(u))];
+            if(!arrayFotosActuales.length&&ev.Foto_Cabecera)arrayFotosActuales=[ev.Foto_Cabecera];
+            dibujarMiniaturasModal();actualizarFotoModal();
+        };
+        function actualizarFotoModal() {
+            const img=document.getElementById('modal-gal-img-principal'), url=arrayFotosActuales[indexFotoActual];
+            if(!url){img.src=svgCamara;return;}
+            img.style.opacity='.35';
+            const preload=new Image();preload.decoding='async';
+            const displayUrl=urlImagenGaleria(url,eventoModalActual);
+            preload.onload=()=>{img.src=displayUrl;img.style.opacity='1';};
+            preload.onerror=()=>{img.src=svgCamara;img.style.opacity='1';};
+            preload.src=urlImagenGaleria(url,eventoModalActual);
+            document.querySelectorAll('.gal-thumb').forEach((el,i)=>{
+                el.classList.toggle('border-brand-accent',i===indexFotoActual);
+                el.classList.toggle('opacity-100',i===indexFotoActual);
+                el.classList.toggle('border-transparent',i!==indexFotoActual);
+                el.classList.toggle('opacity-50',i!==indexFotoActual);
+            });
+            const active=document.querySelectorAll('.gal-thumb')[indexFotoActual];
+            if(active)active.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
+        }
+        function cambiarFotoModal(d){if(!arrayFotosActuales.length)return;indexFotoActual=(indexFotoActual+d+arrayFotosActuales.length)%arrayFotosActuales.length;actualizarFotoModal();}
+        window.irAFotoModal=i=>{if(i>=0&&i<arrayFotosActuales.length){indexFotoActual=i;actualizarFotoModal();}};
+        function dibujarMiniaturasModal(){
+            document.getElementById('modal-gal-thumbs-container').innerHTML=arrayFotosActuales.map((url,i)=>`
+                <button type="button" onclick="irAFotoModal(${i})" aria-label="Ver fotografía ${i+1}" class="gal-thumb w-24 h-24 lg:w-full lg:h-32 rounded-lg overflow-hidden border-2 ${i===0?'border-brand-accent opacity-100':'border-transparent opacity-50'} cursor-pointer hover:opacity-100 transition-all flex-shrink-0 relative group bg-[#121212]">
+                <img src="${urlImagenGaleria(url,eventoModalActual)}" alt="Miniatura ${i+1}" class="w-full h-full object-cover" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${placeholderImagen}'"><span class="absolute inset-0 bg-black/20 group-hover:bg-transparent pointer-events-none"></span></button>`).join('');
+        }
+        function extensionDesdeMime(mime, urlOriginal) {
+            const tipos = { 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/avif': 'avif', 'image/tiff': 'tif', 'image/gif': 'gif', 'image/heif': 'heif' };
+            const tipo = String(mime || '').split(';')[0].trim().toLowerCase();
+            if (tipos[tipo]) return tipos[tipo];
+            try { return (new URL(urlOriginal)).pathname.match(/\.([^.\/]+)$/)?.[1]?.toLowerCase() || 'jpg'; }
+            catch (_) { return 'jpg'; }
+        }
+
+        function mostrarAvisoDescarga(fallbackUrl) {
+            document.getElementById('aviso-descarga-tufoto')?.remove();
+            const aviso = document.createElement('div');
+            aviso.id = 'aviso-descarga-tufoto';
+            aviso.className = 'fixed bottom-5 left-1/2 -translate-x-1/2 z-[9999] w-[calc(100%-2rem)] max-w-lg rounded-xl border border-brand-accent/50 bg-zinc-950 text-white shadow-2xl p-5';
+            aviso.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="mt-0.5 text-brand-accent text-xl" aria-hidden="true">ⓘ</div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-bold tracking-wide">TuFotoEnFoco · Descarga alternativa</p>
+                        <p class="mt-1 text-sm leading-relaxed text-zinc-300">No hemos podido iniciar la descarga automática. Puedes abrir la fotografía en una pestaña nueva y guardarla desde allí.</p>
+                        <div class="mt-4 flex flex-wrap gap-3">
+                            <a href="${fallbackUrl.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-md bg-brand-accent px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black hover:bg-white transition-colors">Abrir fotografía</a>
+                            <button type="button" class="rounded-md border border-zinc-700 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-zinc-300 hover:border-white hover:text-white">Cerrar</button>
+                        </div>
+                    </div>
+                </div>`;
+            aviso.querySelector('button').addEventListener('click', () => aviso.remove());
+            document.body.appendChild(aviso);
+        }
+
+        async function descargarFotoSeleccionada(){
+            const url=arrayFotosActuales[indexFotoActual];
+            if(!url) return;
+            const llevaMarca=eventoTieneMarcaAgua(eventoModalActual);
+            const downloadUrl=urlDescargaFoto(url,eventoModalActual);
+            // Abrimos una pestaña vacía durante el gesto del usuario para poder usarla
+            // como alternativa si el navegador o el servidor bloquean la descarga.
+            const pestañaAlternativa=window.open('about:blank','_blank');
+            const fallbackUrl=llevaMarca ? urlImagenGaleria(url,eventoModalActual) : url;
+            try {
+                const r=await fetch(downloadUrl,{cache:'no-store'});
+                if(!r.ok) throw new Error(`HTTP ${r.status}`);
+                const blob=await r.blob();
+                if(!blob.size || !String(blob.type||'').startsWith('image/')) throw new Error('Respuesta de imagen no válida');
+                const extension=extensionDesdeMime(blob.type,url);
+                const objectUrl=URL.createObjectURL(blob);
+                const a=document.createElement('a');
+                a.href=objectUrl;
+                a.download=`${eventoModalActual?.ID_Evento||'fotografia'}_${indexFotoActual+1}.${extension}`;
+                document.body.appendChild(a);a.click();a.remove();
+                setTimeout(()=>URL.revokeObjectURL(objectUrl),1500);
+                if(pestañaAlternativa && !pestañaAlternativa.closed) pestañaAlternativa.close();
+            } catch(e) {
+                console.error('No se pudo descargar la fotografía:',e);
+                if(pestañaAlternativa && !pestañaAlternativa.closed) {
+                    pestañaAlternativa.location.replace(fallbackUrl);
+                } else {
+                    mostrarAvisoDescarga(fallbackUrl);
+                }
+            }
+        }
+
+
+        // Carga robusta de componentes compartidos: reintentos independientes y copia local de respaldo.
+        async function cargarComponenteCompartido(url, placeholderId, marcador) {
+            const destino = document.getElementById(placeholderId);
+            if (!destino) return null;
+            const cacheKey = `tfe:componente:v2:${url}`;
+            let htmlLocal = null;
+            try { htmlLocal = localStorage.getItem(cacheKey); } catch (_) {}
+
+            // Mostrar inmediatamente la última versión válida guardada en este navegador.
+            if (htmlLocal && htmlLocal.includes(marcador)) destino.innerHTML = htmlLocal;
+
+            let ultimoError = null;
+            for (let intento = 0; intento < 3; intento++) {
+                try {
+                    const respuesta = await fetch(url, { cache: 'default', credentials: 'same-origin' });
+                    if (!respuesta.ok) throw new Error(`${url}: HTTP ${respuesta.status}`);
+                    const html = await respuesta.text();
+                    if (!html || !html.includes(marcador)) throw new Error(`${url}: respuesta vacía o incompleta`);
+                    if (html !== htmlLocal) destino.innerHTML = html;
+                    try { localStorage.setItem(cacheKey, html); } catch (_) {}
+                    return html;
+                } catch (error) {
+                    ultimoError = error;
+                    if (intento < 2) await new Promise(resolve => setTimeout(resolve, 250 * (intento + 1)));
+                }
+            }
+
+            // Si falla la red, se conserva la copia local; un componente nunca bloquea a los demás.
+            if (!htmlLocal || !htmlLocal.includes(marcador)) {
+                console.error(`No se pudo cargar ${url}:`, ultimoError);
+                return null;
+            }
+            console.warn(`Se utiliza la copia local de ${url}:`, ultimoError);
+            return htmlLocal;
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // La lectura de datos empieza a la vez que los componentes compartidos.
+            const datosCargaPromise = cargarDatosDesdeSheet();
+            const toggleClass = (el, cls) => el.classList.toggle(cls);
+
+            try {
+                // Cada componente tiene su propia recuperación: un fallo no impide cargar los otros.
+                await Promise.all([
+                    cargarComponenteCompartido('contacto.html', 'contacto-component', 'form-contacto'),
+                    cargarComponenteCompartido('header.html', 'header-placeholder', 'main-header'),
+                    cargarComponenteCompartido('footer.html', 'footer-placeholder', 'main-footer')
+                ]);
+
+                // Los datos pueden haber terminado antes que el header; reconstruimos ahora el menú dinámico.
+                if (Array.isArray(window._tfeGaleriasParaMenu)) {
+                    actualizarMenusDinamicos(window._tfeGaleriasParaMenu);
+                }
+
+                const path=location.pathname.split('/').pop()||'index.html';const page=document.body.dataset.page||'';const catMode=page==='categoria'||(page==='galerias'&&new URLSearchParams(location.search).get('tipo')==='categorias');
+                document.querySelectorAll('#nav-links-normal a,#nav-links-normal button,#mobile-nav-links > a').forEach(a=>{a.classList.remove('text-brand-accent','font-bold','bg-brand-accent','text-black');a.classList.add('text-gray-300');});
+                const activeSelector=page==='sinbalon'?'a[href="sin-balon.html"]':page==='cultura'?'a[href="cultura.html"]':catMode?'#desktop-cat-btn':(!page?'#nav-links-normal a[href="index.html"]':null);
+                if(activeSelector){document.querySelectorAll(activeSelector).forEach(a=>{a.classList.remove('text-gray-300');a.classList.add('text-brand-accent','font-bold');});}if(catMode){document.getElementById('mobile-cat-btn')?.classList.add('text-brand-accent','font-bold');}
+                if(page==='sinbalon'||page==='cultura'){const mobile=document.querySelector(`#mobile-nav-links a[href="${page==='sinbalon'?'sin-balon.html':'cultura.html'}"]`);if(mobile){mobile.classList.remove('text-gray-300');mobile.classList.add('text-brand-accent','font-bold');}}
+            } catch (e) {
+                console.error('Error al preparar los componentes compartidos:', e);
+            }
+            document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+                const menu = document.getElementById('mobile-menu');
+                toggleClass(menu, 'hidden');
+                document.getElementById('menu-icon').setAttribute('d', menu.classList.contains('hidden') ? 'M4 6h16M4 12h16M4 18h16' : 'M6 18L18 6M6 6l12 12');
+            });
+
+            const bindMenu = (btnId, menuId, iconId) => {
+                const btn = document.getElementById(btnId);
+                const menu = document.getElementById(menuId);
+                const icon = iconId ? document.getElementById(iconId) : null;
+                if(btn && menu) {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault(); e.stopPropagation();
+                        toggleClass(menu, 'hidden');
+                        if(icon) toggleClass(icon, 'rotate-180');
+                    });
+                    menu.addEventListener('click', e => e.stopPropagation());
+                }
+                return menu;
+            };
+
+            const menus = [
+                bindMenu('desktop-cat-btn', 'desktop-cat-menu'),
+                bindMenu('desktop-mas-deportes-btn', 'desktop-mas-deportes-menu'),
+                bindMenu('mobile-cat-btn', 'mobile-cat-menu', 'mobile-cat-icon'),
+                bindMenu('mobile-mas-deportes-btn', 'mobile-mas-deportes-menu', 'mobile-mas-deportes-icon')
+            ];
+
+            document.addEventListener('click', () => {
+                menus.forEach(m => { if(m && !m.classList.contains('hidden') && m.id.includes('desktop')) m.classList.add('hidden'); });
+            });
+
+            const modalContacto = document.getElementById('modal-contacto');
+            const formContacto = document.getElementById('form-contacto');
+            
+            document.querySelectorAll('.abrir-contacto').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault(); toggleModal(modalContacto, true);
+                });
+            });
+
+            document.getElementById('btn-cerrar-contacto').addEventListener('click', () => toggleModal(modalContacto, false));
+            document.getElementById('btn-cerrar-exito').addEventListener('click', () => toggleModal(document.getElementById('modal-exito'), false));
+            document.getElementById('btn-cerrar-error').addEventListener('click', () => toggleModal(document.getElementById('modal-error'), false));
+            
+            const mGal = document.getElementById('modal-galeria-vista');
+            const mImg = document.getElementById('modal-imagen-simple');
+            
+            document.getElementById('btn-cerrar-galeria').addEventListener('click', () => toggleModal(mGal, false));
+            document.getElementById('modal-btn-ver-album').addEventListener('click',e=>{e.preventDefault();if(eventoModalActual){try{sessionStorage.setItem('tfe_stats_skip_album_view_'+String(eventoModalActual.ID_Evento||''),String(Date.now()));}catch(err){}location.href='album.html?id='+codificarIdAlbum(eventoModalActual.ID_Evento||'');}});
+            document.getElementById('modal-btn-descargar-mobile').addEventListener('click',()=>document.getElementById('modal-btn-descargar').click());
+            document.getElementById('btn-cerrar-imagen-simple').addEventListener('click', () => toggleModal(mImg, false));
+            
+            mGal.addEventListener('click', (e) => { if(e.target === mGal) toggleModal(mGal, false); });
+            mImg.addEventListener('click', (e) => { if(e.target === mImg) toggleModal(mImg, false); });
+            
+            document.getElementById('modal-gal-prev').addEventListener('click', () => cambiarFotoModal(-1));
+            document.getElementById('modal-gal-next').addEventListener('click', () => cambiarFotoModal(1));
+            const opciones = document.getElementById('modal-descarga-opciones');
+            document.getElementById('modal-btn-descargar').addEventListener('click',()=>{
+                const buy=document.getElementById('descarga-opcion-compra');buy.href=urlCompraActual||'#';
+                buy.classList.toggle('hidden',!/^https?:\/\//i.test(urlCompraActual));toggleModal(opciones,true);
+            });
+            document.getElementById('descarga-opcion-volver').addEventListener('click',()=>toggleModal(opciones,false));
+            document.getElementById('descarga-opcion-gratis').addEventListener('click',()=>{tfeRegistrarEstadistica('free',eventoModalActual,'descarga_gratis');toggleModal(opciones,false);descargarFotoSeleccionada();});
+
+
+            formContacto.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btnEnviar = document.getElementById('btn-enviar-contacto');
+                btnEnviar.querySelector('span').textContent = 'Enviando...';
+                btnEnviar.disabled = true;
+
+                const formData = new URLSearchParams(new FormData(formContacto));
+
+                try {
+                    await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: formData
+                    });
+                    
+                    toggleModal(modalContacto, false); 
+                    formContacto.reset();
+                    setTimeout(() => toggleModal(document.getElementById('modal-exito'), true), 300);
+
+                } catch (error) {
+                    toggleModal(modalContacto, false);
+                    setTimeout(() => toggleModal(document.getElementById('modal-error'), true), 300);
+                } finally {
+                    btnEnviar.querySelector('span').textContent = 'Enviar mensaje';
+                    btnEnviar.disabled = false;
+                }
+            });
+
+            // La descarga de datos ya está en curso desde el inicio del evento.
+            await datosCargaPromise;
+        });
+
+        async function cargarDatosDesdeSheet() {
+            try {
+                const data = await window.TFEDataCache.get(DATOS_JSON_URL);
+                if (!data || typeof data !== 'object' || !Array.isArray(data.galerias) || !data.gestionWeb) {
+                    throw new Error('Contenido no válido en datos.json');
+                }
+
+                const splash = document.getElementById('pantalla-carga');
+                const pageMode = document.body.dataset.page || '';
+
+                const gWeb = data.gestionWeb || {};
+                const isConstruccion = checkIsTrue(gWeb.construccion);
+                const isMantenimiento = checkIsTrue(gWeb.mantenimiento);
+                const isMantenimientoTotal = checkIsTrue(gWeb.mantenimientoTotal);
+
+                if (isConstruccion || isMantenimiento || isMantenimientoTotal) {
+                    const estado = document.getElementById('estado-mensaje');
+                    estado.classList.remove('hidden');
+                    estado.classList.add('flex');
+                    document.getElementById('main-content-sections')?.classList.add('hidden');
+                    document.getElementById('dynamic-page')?.classList.add('hidden');
+                    document.getElementById('main-header')?.classList.remove('hidden');
+                    document.getElementById('main-footer')?.classList.remove('hidden');
+                    if (isConstruccion) {
+                        document.getElementById('estado-titulo').textContent = 'Próximamente';
+                        document.getElementById('estado-desc').innerHTML = 'Estamos creando una nueva experiencia web.<br>Vuelve pronto para descubrirla.';
+                        document.getElementById('footer-redes')?.style && (document.getElementById('footer-redes').style.display = 'none');
+                        document.getElementById('nav-links-container')?.style && (document.getElementById('nav-links-container').style.display = 'none');
+                        document.getElementById('mobile-menu-btn-container')?.style && (document.getElementById('mobile-menu-btn-container').style.display = 'none');
+                        estado.classList.add('min-h-[calc(100vh-200px)]');
+                    } else if (isMantenimientoTotal) {
+                        document.getElementById('estado-titulo').textContent = 'En Mantenimiento';
+                        document.getElementById('estado-desc').innerHTML = 'Estamos realizando mejoras técnicas en la web.<br>Disculpa las molestias.';
+                        document.getElementById('nav-links-container')?.style && (document.getElementById('nav-links-container').style.display = 'none');
+                        document.getElementById('mobile-menu-btn-container')?.style && (document.getElementById('mobile-menu-btn-container').style.display = 'none');
+                        document.querySelectorAll('.abrir-contacto').forEach(el => el.style.display = 'none');
+                    } else {
+                        document.getElementById('estado-titulo').textContent = 'En Mantenimiento';
+                        document.getElementById('estado-desc').innerHTML = 'Estamos actualizando las galerías.<br>Puedes contactarme si lo necesitas.';
+                        document.getElementById('nav-links-normal')?.style && (document.getElementById('nav-links-normal').style.display = 'none');
+                        document.getElementById('mobile-nav-links')?.querySelectorAll('a, div').forEach(el => {
+                            if (el.id !== 'mobile-nav-contacto' && !el.classList.contains('border-t')) el.style.display = 'none';
+                        });
+                    }
+                    if (splash) { splash.classList.add('fade-out-splash'); setTimeout(() => splash.style.display = 'none', 300); }
+                    return;
+                }
+
+                const imgFondoPortada = document.getElementById('img-hero-fondo');
+                if(imgFondoPortada && data.imgPortada && String(data.imgPortada).trim() !== '') {
+                    imgFondoPortada.src = data.imgPortada;
+                    imgFondoPortada.className = "w-full h-full object-cover opacity-[64%] transition-opacity duration-1000";
+                }
+
+                window.categoriasDisponibles = data.categorias || [];
+                window.categoriasOrdenadas = data.categoriasOrdenadas || [];
+                window.categoriasMasDeportesOrdenadas = data.categoriasMasDeportesOrdenadas || [];
+                const gals = (data.galerias || []).filter(g => String(g.ID_Evento || '').trim() !== '').sort(compararFechaDescendente);
+                gals.forEach((ev, idx) => { ev._id = idx; window.eventosGlobal[idx] = ev; });
+                if (pageMode) { document.getElementById('main-content-sections')?.classList.add('hidden'); if(pageMode==='album') await renderAlbumPage(gals); else renderDynamicPage(pageMode,gals); }
+
+                // La página de álbum es independiente: no debe continuar inicializando
+                // los carruseles y secciones de portada después de renderizar sus fotos.
+                if (pageMode === 'album') {
+                    document.getElementById('main-header')?.classList.remove('hidden');
+                    document.getElementById('main-footer')?.classList.remove('hidden');
+                    if (splash) { splash.classList.add('fade-out-splash'); setTimeout(() => splash.style.display = 'none', 600); }
+                    return;
+                }
+                
+                const pr = gals.filter(g => checkIsTrue(g.Ultimas_galerias));
+                const dest = gals.filter(g => checkIsTrue(g.Destacadas) || checkIsTrue(g['Categorías destacadas']) || checkIsTrue(g.N));
+                
+                const cCar = 'flex overflow-x-auto gap-6 lg:gap-8 snap-x snap-mandatory carrusel-scroll carrusel-principal py-4 w-full px-2 min-h-[350px] transition-all duration-300';
+
+                const contPr = document.getElementById('contenedor-galerias');
+                if (pr.length === 0) {
+                    contPr.className = 'flex flex-wrap justify-center gap-6 w-full pb-4';
+                    contPr.innerHTML = '<p class="w-full text-center text-gray-500 py-10">No hay galerías fijadas.</p>';
+                } else {
+                    contPr.className = cCar; 
+                    contPr.innerHTML = pr.map(generarTarjetaHTML).join('');
+                }
+                inicializarCarruselInteractivos('contenedor-galerias', 'prev-main', 'next-main');
+
+                const contDest = document.getElementById('contenedor-destacadas');
+                if (dest.length > 0) {
+                    document.getElementById('seccion-destacadas').style.display = 'block';
+                    contDest.className = cCar; 
+                    contDest.innerHTML = dest.map(generarTarjetaHTML).join('');
+                    inicializarCarruselInteractivos('contenedor-destacadas', 'prev-destacadas', 'next-destacadas');
+                } else {
+                    document.getElementById('seccion-destacadas').style.display = 'none';
+                }
+                
+                setTimeout(() => {
+                    updateCarouselButtons('contenedor-galerias', 'prev-main', 'next-main');
+                    updateCarouselButtons('contenedor-destacadas', 'prev-destacadas', 'next-destacadas');
+                }, 150);
+
+                document.getElementById('btn-cargar-mas').style.display = 'inline-flex';
+                
+                const setImagenSeccion = (idImg, srcDato) => {
+                    const imgEl = document.getElementById(idImg);
+                    if (imgEl) {
+                        imgEl.classList.remove('opacity-0');
+                        if (srcDato && String(srcDato).trim() !== '') {
+                            imgEl.src = srcDato;
+                            imgEl.className = "w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 cursor-pointer";
+                        } else {
+                            imgEl.src = placeholderImagen;
+                            imgEl.className = "w-24 h-24 object-contain opacity-30 transition-transform duration-700 group-hover:scale-110";
+                            imgEl.onclick = null; 
+                        }
+                    }
+                };
+                
+                setImagenSeccion('img-seccion-sin-balon', data.imgSinBalon);
+                setImagenSeccion('img-seccion-cultura', data.imgCultura);
+                
+                window._tfeGaleriasParaMenu = gals;
+                actualizarMenusDinamicos(gals);
+                aplicarFondosAlternos();
+
+                document.getElementById('main-header')?.classList.remove('hidden');
+                if (!pageMode) {
+                    document.getElementById('main-content-sections').classList.remove('hidden');
+                    document.getElementById('main-content-sections').classList.add('flex');
+                }
+                document.getElementById('main-footer')?.classList.remove('hidden');
+                
+                if(splash){splash.classList.add('fade-out-splash');setTimeout(() => splash.style.display = 'none', 600);}
+                
+            } catch (e) {
+                mostrarPantallaNoDisponible();
+            }
+        }
+
+        function mostrarPantallaNoDisponible() {
+            const pantalla = document.getElementById('pantalla-carga');
+            if (!pantalla) return;
+            pantalla.className = 'fixed inset-0 bg-zinc-950 z-[99999] flex flex-col items-center justify-center px-6 py-12 overflow-y-auto';
+            pantalla.innerHTML = `
+                <div class="w-full max-w-2xl mx-auto text-center flex flex-col items-center">
+                    <a href="index.html" aria-label="TuFotoEnFoco - Inicio" class="inline-flex justify-center mb-10">
+                        <img src="./assets/LogoWebTuFotoEnFoco.png"
+                             alt="TuFotoEnFoco" class="h-16 sm:h-20 w-auto max-w-full object-contain drop-shadow-[0_0_18px_rgba(241,233,51,0.12)]">
+                    </a>
+                    <div class="w-16 h-1 rounded-full bg-brand-accent mb-8 shadow-[0_0_16px_rgba(241,233,51,0.35)]"></div>
+                    <p class="text-brand-accent text-xs sm:text-sm font-bold uppercase tracking-[0.3em] mb-4">TuFotoEnFoco</p>
+                    <h1 class="text-white text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight mb-5">No disponible</h1>
+                    <p class="text-gray-300 text-lg sm:text-2xl font-light mb-3">Volveremos pronto</p>
+                    <p class="text-gray-500 text-sm sm:text-base leading-relaxed max-w-lg mb-10">
+                        Estamos teniendo problemas técnicos. Estamos trabajando para volver a estar disponibles lo antes posible.
+                    </p>
+                    <div class="w-full max-w-md border border-zinc-800 bg-zinc-900/70 rounded-2xl px-6 py-6 sm:px-8 shadow-[0_0_35px_rgba(241,233,51,0.06)]">
+                        <p class="text-white text-xs font-bold uppercase tracking-[0.22em] mb-5">Sígueme</p>
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                            <a href="https://www.instagram.com/tufotoenfoco/" target="_blank" rel="noopener noreferrer"
+                               class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-brand-accent bg-brand-accent text-black font-bold text-sm shadow-[0_0_18px_rgba(241,233,51,0.16)] hover:brightness-110 hover:scale-105 transition-all duration-200">
+                                <svg class="w-5 h-5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.036 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.487.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047-.203-.036-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/></svg>
+                                Instagram
+                            </a>
+                            <a href="https://www.facebook.com/share/1C9KxgBYbg/" target="_blank" rel="noopener noreferrer"
+                               class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-brand-accent bg-brand-accent text-black font-bold text-sm shadow-[0_0_18px_rgba(241,233,51,0.16)] hover:brightness-110 hover:scale-105 transition-all duration-200">
+                                <svg class="w-5 h-5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M16 8.049C16 3.603 12.418 0 8 0S0 3.603 0 8.049c0 4.017 2.925 7.346 6.75 7.951v-5.625H4.718V8.049H6.75V6.275c0-2.017 1.194-3.14 3.022-3.14.875 0 1.79.157 1.79.157v1.98h-1.009c-.994 0-1.303.62-1.303 1.257v1.52h2.219l-.355 2.326H9.25V16c3.825-.605 6.75-3.934 6.75-7.951z"/></svg>
+                                Facebook
+                            </a>
+                        </div>
+                    </div>
+                    <button type="button" onclick="window.location.reload()"
+                            class="mt-8 text-sm text-gray-500 hover:text-brand-accent transition-colors underline underline-offset-4">
+                        Intentar de nuevo
+                    </button>
+                </div>`;
+            document.getElementById('header-placeholder')?.classList.add('hidden');
+            document.getElementById('main-header')?.classList.add('hidden');
+            document.getElementById('main-footer')?.classList.add('hidden');
+        }
+
+
+
+        async function renderAlbumPage(gals){
+            const root=document.getElementById('dynamic-page');
+            if(!root)return;
+            root.classList.remove('hidden');
+            const id=decodificarIdAlbum(new URLSearchParams(location.search).get('id')||'');
+            const ev=gals.find(g=>String(g.ID_Evento)===id);
+            if(!ev){root.innerHTML='<section class="max-w-5xl mx-auto px-6 py-24 text-center"><h1 class="text-3xl font-bold text-white">Álbum no encontrado</h1><p class="text-gray-400 mt-3">No se ha encontrado el evento solicitado.</p><a href="galerias.html?tipo=categorias" class="inline-block mt-6 text-brand-accent">Volver a categorías</a></section>';return;}
+            eventoModalActual=ev;
+            let omitirVistaAlbum=false;
+            try{const skipKey='tfe_stats_skip_album_view_'+id;const stamp=Number(sessionStorage.getItem(skipKey)||0);if(stamp&&Date.now()-stamp<120000)omitirVistaAlbum=true;sessionStorage.removeItem(skipKey);}catch(err){}
+            if(!omitirVistaAlbum)tfeRegistrarEstadistica('view',ev,'album_completo');
+            const cat=categoriaEfectiva(ev);
+            const categoryHref=['sin balón','sin balon'].includes(normalizarCategoria(cat))?'sin-balon.html':normalizarCategoria(cat)==='cultura'?'cultura.html':'categoria.html?cat='+encodeURIComponent(cat);
+            const photos=await fetchFotosDesdeBackblaze(id);
+            const available=photos.length?photos:(ev.Foto_Cabecera?[ev.Foto_Cabecera]:[]);
+            const declared=Number(ev.Total_Fotos);
+            const limit=Number.isFinite(declared)&&declared>0?Math.min(available.length,Math.floor(declared)):available.length;
+            const all=available.slice(0,limit);
+            const total=all.length;
+            if(!all.length){root.innerHTML='<section class="max-w-5xl mx-auto px-6 py-24 text-center"><h1 class="text-3xl font-bold text-white">Este álbum todavía no tiene fotografías disponibles</h1><a href="'+categoryHref+'" class="inline-block mt-6 text-brand-accent">Volver a la categoría</a></section>';return;}
+            const same=gals.filter(g=>normalizarCategoria(categoriaEfectiva(g))===normalizarCategoria(cat));
+            const idx=same.findIndex(g=>String(g.ID_Evento)===id);
+            const next=same[idx+1];
+            let page=0,selected=0,playTimer=null,isPlaying=false,playerOpen=false;
+            const perPage=16;
+            const safe=(v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            const linkCompra=String(ev.Link_Compra||'').trim();
+            const free=checkIsTrue(ev.Descarga_Gratis ?? ev.Descarga ?? ev['Descarga gratis']);
+            const descripcion=String(ev.Descripcion_Larga||'').trim();
+            const resultados=String(ev.Resultados||'').trim();
+            const fotosTotal=all.length;
+            const nombreFoto=(url,n)=>{try{const p=new URL(url,location.href).pathname.split('/').pop();return decodeURIComponent(p||`${id}_${n+1}`);}catch(e){return `${id}_${n+1}`;}};
+            const metadata=()=>`<div class="album-meta-card rounded-xl border border-zinc-700 bg-zinc-900/95 p-5 shadow-[0_0_18px_rgba(241,233,51,0.10)] backdrop-blur"><p class="text-brand-accent text-[11px] uppercase tracking-[.2em] font-bold mb-3">Información de la fotografía</p><p id="album-photo-name" class="text-white font-bold break-all">${safe(nombreFoto(all[0],0))}</p><p class="text-white mt-2 font-semibold">${safe(ev.Titulo||'')}</p><div class="mt-3 space-y-2 text-sm text-gray-300"><p><span class="text-brand-accent">Fecha</span> · ${safe(ev.Fecha||'—')}</p><p><span class="text-brand-accent">Lugar</span> · ${safe(ev.Lugar||'—')}</p></div><div class="flex flex-col gap-2 mt-4">${free?'<button id="album-free-download" type="button" class="w-full px-4 py-3 border border-zinc-600 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:border-brand-accent hover:text-brand-accent">Descargar gratis con marca de agua</button>':''}${/^https?:\/\//i.test(linkCompra)?`<a href="${safe(linkCompra)}" target="_blank" rel="noopener noreferrer" class="tfe-buy-link block text-center px-4 py-3 bg-brand-accent text-black rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white">Tu recuerdo sin logotipo</a>`:''}</div></div>`;
+            root.innerHTML=`<section class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-10 min-h-screen">
+              <nav class="text-sm mb-5"><a href="galerias.html?tipo=categorias" class="text-brand-accent hover:text-white">Categorías</a><span class="mx-2 text-gray-500">/</span><a href="${categoryHref}" class="text-brand-accent hover:text-white">${safe(cat)}</a></nav>
+              <h1 class="text-3xl md:text-5xl font-black text-white">${safe(ev.Titulo||'')}</h1>
+              <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-semibold text-brand-accent"><span>${safe(ev.Fecha||'')}</span><span class="text-zinc-600">|</span><span>${safe(ev.Lugar||'')}</span><span class="text-zinc-600">|</span><span>${fotosTotal} fotografías</span></div>
+              ${descripcion?`<p class="text-white text-base md:text-lg leading-relaxed mt-5 max-w-5xl whitespace-pre-line">${safe(descripcion)}</p>`:''}
+              ${resultados?`<p class="text-brand-accent text-sm md:text-base leading-relaxed mt-2 max-w-5xl whitespace-pre-line">${safe(resultados)}</p>`:''}
+              ${/^https?:\/\//i.test(linkCompra)?`<div class="mt-7 border-y border-zinc-800 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"><p class="text-gray-300 text-sm md:text-base">Tu apoyo me permite seguir capturando momentos y creando recuerdos. ¡Gracias!</p><a href="${safe(linkCompra)}" target="_blank" rel="noopener noreferrer" class="shrink-0 px-5 py-3 bg-brand-accent text-black font-bold text-xs uppercase tracking-wider rounded-md hover:bg-white transition-colors">Tu recuerdo sin logotipo · descárgalo aquí</a></div>`:''}
+              <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-5 mt-8 items-start">
+                <div>
+                  <div class="relative bg-black rounded-xl overflow-hidden min-h-[300px] md:min-h-[65vh] flex items-center justify-center border border-zinc-800 shadow-none">
+                    <img id="album-main-photo" src="${urlImagenGaleria(all[0],ev)}" alt="${safe(ev.Titulo||'Fotografía del álbum')}" class="max-w-full max-h-[78vh] object-contain cursor-pointer transition-opacity duration-500" title="Pulsa para ver los datos de esta fotografía">
+                    
+                    <button id="album-photo-prev" type="button" aria-label="Fotografía anterior" class="hidden absolute left-3 top-1/2 -translate-y-1/2 bg-black/70 border border-white/30 text-white rounded-full w-12 h-12 text-2xl hover:bg-brand-accent hover:text-black">‹</button>
+                    <button id="album-photo-next" type="button" aria-label="Fotografía siguiente" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/70 border border-white/30 text-white rounded-full w-12 h-12 text-2xl hover:bg-brand-accent hover:text-black">›</button>
+                  </div>
+                  <div class="mt-3 flex items-center justify-between gap-3"><button id="album-play" type="button" class="px-5 py-3 border border-brand-accent text-brand-accent rounded-lg hover:bg-brand-accent hover:text-black text-xs font-bold uppercase tracking-wider">▶ Reproducir presentación</button><span id="album-photo-position" class="text-sm text-gray-300">1 / ${all.length}</span></div>
+                </div>
+                <aside class="space-y-4"><div id="album-photo-details" class="hidden">${metadata()}</div></aside>
+              </div>
+              <div id="album-thumbs" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mt-5"></div>
+              <div class="flex justify-start mt-3"><p id="album-counter" class="text-sm text-brand-accent font-semibold">${Math.min(perPage,all.length)} de ${fotosTotal} fotografías</p></div>
+              <div class="flex flex-wrap items-center justify-center gap-3 mt-7">
+                <button id="album-prev" type="button" class="px-5 py-3 rounded-md border border-zinc-700 text-white hover:border-brand-accent disabled:opacity-30 disabled:cursor-not-allowed">Atrás</button>
+                <a href="${categoryHref}" class="px-5 py-3 rounded-md border border-zinc-700 text-white hover:border-brand-accent">Volver a la categoría</a>
+                <button id="album-next" type="button" class="px-5 py-3 rounded-md border border-zinc-700 text-white hover:border-brand-accent disabled:opacity-30 disabled:cursor-not-allowed">Siguiente</button>
+                ${next?`<a href="album.html?id=${codificarIdAlbum(next.ID_Evento)}" class="px-5 py-3 rounded-md border border-zinc-700 text-white hover:border-brand-accent">Siguiente evento</a>`:'<span class="px-5 py-3 rounded-md border border-zinc-800 text-zinc-600 cursor-not-allowed" aria-disabled="true">Siguiente evento</span>'}
+              </div>
+            </section>
+            <div id="album-player-overlay" class="fixed inset-0 z-[300] hidden items-center justify-center bg-black/95 backdrop-blur-lg p-4 opacity-0 transition-opacity duration-500">
+              <div class="relative w-full max-w-[1500px] h-[92vh] bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-zinc-800"><div><p class="text-brand-accent text-xs uppercase tracking-[.2em] font-bold">Presentación del álbum</p><p id="player-position" class="text-gray-400 text-xs mt-1"></p></div><button id="player-close" class="px-4 py-2 border border-zinc-700 rounded-lg text-white hover:border-brand-accent">Cerrar ×</button></div>
+                <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 p-4">
+                  <div class="relative flex items-center justify-center min-h-0 bg-black rounded-xl overflow-hidden"><img id="player-photo" src="" class="max-w-full max-h-full object-contain opacity-100 transition-opacity duration-700">
+                    <button id="player-prev" class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/70 border border-white/30 text-white w-11 h-11 text-2xl">‹</button><button id="player-next" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/70 border border-white/30 text-white w-11 h-11 text-2xl">›</button></div>
+                  <aside id="player-info" class="flex flex-col justify-center"></aside>
+                </div>
+                <div class="px-5 py-3 border-t border-zinc-800 flex justify-center"><button id="player-pause" class="px-6 py-2 bg-brand-accent text-black rounded-lg font-bold text-xs uppercase tracking-wider">Ⅱ Pausar</button></div>
+              </div>
+            </div>`;
+            const main=document.getElementById('album-main-photo');
+            const details=document.getElementById('album-photo-details');
+            const stopPlay=()=>{if(playTimer){clearInterval(playTimer);playTimer=null;}isPlaying=false;const b=document.getElementById('player-pause');if(b)b.textContent='▶ Reanudar';};
+            const photoInfoHtml=()=>`<div class="rounded-xl border border-zinc-700 bg-zinc-900/95 p-5"><p class="text-brand-accent text-[11px] uppercase tracking-[.2em] font-bold mb-3">Información de la fotografía</p><p class="text-white font-bold break-all">${safe(nombreFoto(all[selected],selected))}</p><p class="text-white mt-2 font-semibold">${safe(ev.Titulo||'')}</p><div class="mt-3 space-y-2 text-sm text-gray-300"><p><span class="text-brand-accent">Fecha</span> · ${safe(ev.Fecha||'—')}</p><p><span class="text-brand-accent">Lugar</span> · ${safe(ev.Lugar||'—')}</p></div><div class="flex flex-col gap-2 mt-4">${free?'<button type="button" id="player-free-download" class="w-full px-4 py-3 border border-zinc-600 text-white rounded-lg text-xs font-bold uppercase">Descargar gratis con marca de agua</button>':''}${/^https?:\/\//i.test(linkCompra)?`<a href="${safe(linkCompra)}" target="_blank" rel="noopener noreferrer" class="tfe-buy-link block text-center px-4 py-3 bg-brand-accent text-black rounded-lg text-xs font-bold uppercase">Tu recuerdo sin logotipo</a>`:''}</div></div>`;
+            const downloadSelected=()=>{
+                if(playerOpen && isPlaying) stopPlay();
+                arrayFotosActuales=all;
+                indexFotoActual=selected;
+                eventoModalActual=ev;
+                urlCompraActual=linkCompra;
+                const buy=document.getElementById('descarga-opcion-compra');
+                buy.href=linkCompra||'#';
+                buy.classList.toggle('hidden',!/^https?:\/\//i.test(linkCompra));
+                const options=document.getElementById('modal-descarga-opciones');
+                if(options.parentElement!==document.body) document.body.appendChild(options);
+                options.style.zIndex='99999';
+                options.classList.remove('hidden');
+                options.classList.add('flex');
+                toggleModal(options,true);
+            };
+            const updateDetails=()=>{document.getElementById('album-photo-details').innerHTML=photoInfoHtml();document.getElementById('album-photo-details').classList.remove('hidden');};
+            const updateMain=()=>{main.style.opacity='0.25';const url=urlImagenGaleria(all[selected],ev);const preload=new Image();preload.onload=()=>{main.src=url;main.style.opacity='1';};preload.onerror=()=>{main.src=placeholderImagen;main.style.opacity='1';};preload.src=url;document.getElementById('album-photo-position').textContent=`${selected+1} / ${all.length}`;document.getElementById('album-photo-prev').classList.toggle('hidden',selected===0);document.getElementById('album-photo-next').classList.toggle('hidden',selected===all.length-1);if(!details.classList.contains('hidden'))updateDetails();};
+            const draw=()=>{const start=page*perPage,end=Math.min(start+perPage,all.length),holder=document.getElementById('album-thumbs');
+                document.getElementById('album-counter').textContent=`${end} de ${fotosTotal} fotografías`;
+                if(Number(holder.dataset.page)!==page){holder.dataset.page=String(page);holder.innerHTML=all.slice(start,end).map((url,i)=>`<button type="button" class="aspect-square rounded-lg overflow-hidden border-2 border-transparent bg-zinc-800 transition-all" data-photo="${start+i}" aria-label="Ver fotografía ${start+i+1}"><img src="${urlImagenGaleria(url,ev)}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${placeholderImagen}'"></button>`).join('');}
+                holder.querySelectorAll('button').forEach(b=>{const active=Number(b.dataset.photo)===selected;b.classList.toggle('border-brand-accent',active);b.classList.toggle('border-[3px]',active);b.classList.toggle('shadow-[0_0_0_2px_rgba(241,233,51,0.45),0_0_18px_rgba(241,233,51,0.55)]',active);});
+                document.getElementById('album-prev').disabled=page===0;document.getElementById('album-next').disabled=end>=all.length;
+            };
+            const selectPhoto=(n)=>{selected=Math.max(0,Math.min(all.length-1,n));page=Math.floor(selected/perPage);updateMain();draw();};
+            main.addEventListener('click',(e)=>{e.stopPropagation();if(details.classList.contains('hidden'))updateDetails();else details.classList.add('hidden');});
+            details.addEventListener('click',e=>{const btn=e.target.closest('#album-free-download, #player-free-download');if(btn){e.preventDefault();e.stopPropagation();downloadSelected();return;}e.stopPropagation();});
+            root.addEventListener('click',e=>{if(!e.target.closest('#album-main-photo')&&!e.target.closest('#album-photo-details'))details.classList.add('hidden');});
+            document.addEventListener('click',e=>{if(!root.contains(e.target))details.classList.add('hidden');});
+            document.getElementById('album-thumbs').addEventListener('click',e=>{const b=e.target.closest('button[data-photo]');if(!b)return;stopPlay();selected=Number(b.dataset.photo);updateMain();draw();});
+            root.addEventListener('click',e=>{const btn=e.target.closest('#album-free-download');if(btn){e.preventDefault();e.stopPropagation();downloadSelected();}});
+            document.getElementById('player-info').addEventListener('click',e=>{if(e.target.closest('#player-free-download'))downloadSelected();});
+            document.getElementById('album-photo-prev').addEventListener('click',()=>{stopPlay();selectPhoto(selected-1);});
+            document.getElementById('album-photo-next').addEventListener('click',()=>{stopPlay();selectPhoto(selected+1);});
+            document.getElementById('album-prev').addEventListener('click',()=>{if(page>0){stopPlay();page--;selected=Math.min(page*perPage,all.length-1);updateMain();draw();}});
+            document.getElementById('album-next').addEventListener('click',()=>{if((page+1)*perPage<all.length){stopPlay();page++;selected=page*perPage;updateMain();draw();}});
+            const overlay=document.getElementById('album-player-overlay'),playerPhoto=document.getElementById('player-photo');
+            const updatePlayer=()=>{playerPhoto.style.opacity='0';setTimeout(()=>{playerPhoto.src=urlImagenGaleria(all[selected],ev);playerPhoto.style.opacity='1';},250);document.getElementById('player-position').textContent=`${selected+1} / ${all.length}`;document.getElementById('player-info').innerHTML=photoInfoHtml();document.getElementById('player-prev').classList.toggle('hidden',selected===0);document.getElementById('player-next').classList.toggle('hidden',selected===all.length-1);};
+            const closePlayer=()=>{stopPlay();overlay.classList.add('opacity-0');setTimeout(()=>{overlay.classList.add('hidden');overlay.classList.remove('flex');},500);};
+            document.getElementById('album-play').addEventListener('click',()=>{if(selected>=all.length-1){selected=0;page=0;updateMain();draw();}playerOpen=true;overlay.classList.remove('hidden');overlay.classList.add('flex');requestAnimationFrame(()=>overlay.classList.remove('opacity-0'));updatePlayer();isPlaying=true;document.getElementById('player-pause').textContent='Ⅱ Pausar';playTimer=setInterval(()=>{if(selected>=all.length-1){stopPlay();return;}selected++;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();},2000);});
+            document.getElementById('player-close').addEventListener('click',closePlayer);
+            document.getElementById('player-pause').addEventListener('click',()=>{if(isPlaying){stopPlay();}else{isPlaying=true;document.getElementById('player-pause').textContent='Ⅱ Pausar';playTimer=setInterval(()=>{if(selected>=all.length-1){stopPlay();return;}selected++;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();},2000);}});
+            document.getElementById('player-prev').addEventListener('click',()=>{if(selected>0){selected--;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();}});
+            document.getElementById('player-next').addEventListener('click',()=>{if(selected<all.length-1){selected++;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();}});
+            updateMain();draw();
+        }
+
+        function normalizarCategoria(v){return String(v||'').trim().toLocaleLowerCase('es');}
+        function categoriaEfectiva(ev){
+            const categoriaM = checkIsTrue(ev.Es_Mas_Deportes) ? String(ev.Categoria_Mas_Deportes||'').trim() : '';
+            return categoriaM || String(ev.Categoria_Header||'').trim() || 'General';
+        }
+        function categoriasParaTarjeta(ev){
+            const categoriaK = String(ev.Categoria_Header||'').trim();
+            const categoriaM = checkIsTrue(ev.Es_Mas_Deportes) ? String(ev.Categoria_Mas_Deportes||'').trim() : '';
+            const esMasDeportes = v => ['mas deportes','más deportes'].includes(String(v||'').trim().toLocaleLowerCase('es'));
+            const resultado = [];
+            // La categoría de la columna K aparece primero (a la izquierda).
+            if (categoriaK && !esMasDeportes(categoriaK)) resultado.push(categoriaK);
+            // La categoría de la columna M aparece después (a la derecha).
+            if (categoriaM && !resultado.some(v => v.toLocaleLowerCase('es') === categoriaM.toLocaleLowerCase('es'))) resultado.push(categoriaM);
+            if (!resultado.length && categoriaK) resultado.push(categoriaK);
+            return resultado.length ? resultado : ['General'];
+        }
+        function renderDynamicPage(mode,gals){
+            const root=document.getElementById('dynamic-page');if(!root)return;root.classList.remove('hidden');
+            const params=new URLSearchParams(location.search); if(mode==='galerias') mode=params.get('tipo')==='categorias'?'categorias':'todas'; const category=mode==='categoria'?(params.get('cat')||''):'';
+            const cats=[...new Set([...(window.categoriasOrdenadas||[]),...(window.categoriasDisponibles||[]),...(window.categoriasMasDeportesOrdenadas||[]),...gals.map(g=>categoriaEfectiva(g))].map(v=>String(v||'').trim()).filter(Boolean))].filter(cat=>!['sin balon','cultura','mas deportes'].includes(normalizarCategoria(cat)));
+            if(mode==='categorias'){
+                const cols=cats.length<=4?2:(cats.length<=6?3:(cats.length<=8?4:(cats.length%3===0?3:4)));
+                const cards=cats.map(cat=>{const ev=gals.find(g=>normalizarCategoria(categoriaEfectiva(g))===normalizarCategoria(cat));const img=ev ? urlImagenGaleria(ev.Foto_Cabecera||placeholderImagen,ev) : placeholderImagen;return `<a href="categoria.html?cat=${encodeURIComponent(cat)}" class="${cats.length===1?'col-span-full justify-self-center w-full max-w-[520px] ':''}group bg-brand-base border border-zinc-800 rounded-2xl overflow-hidden hover:border-brand-accent transition-all"><div class="h-52 overflow-hidden"><img src="${img}" onerror="this.onerror=null;this.src='${placeholderImagen}'" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"></div><div class="p-5"><h2 class="text-xl font-bold text-white group-hover:text-brand-accent">${cat}</h2><p class="text-sm text-gray-400 mt-1">${gals.filter(g=>normalizarCategoria(categoriaEfectiva(g))===normalizarCategoria(cat)).length} galerías</p></div></a>`;}).join('');
+                root.innerHTML=`<section class="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-16 min-h-[70vh]"><div class="mb-10 border-b border-zinc-800 pb-5"><p class="text-brand-accent text-xs font-bold tracking-widest uppercase mb-3">TUFOTOENFOCO</p><h1 class="text-4xl md:text-5xl font-black text-white">Explora las categorías</h1><p class="text-gray-400 mt-3">Encuentra cada historia por deporte y temática</p></div><div class="grid gap-6 justify-center justify-items-stretch mx-auto w-full" style="grid-template-columns:repeat(${cols},minmax(0,1fr));max-width:1600px">${cards||'<p class="text-gray-400">No hay categorías disponibles.</p>'}</div><style>@media(max-width:767px){#dynamic-page .grid[style*=grid-template-columns]{grid-template-columns:repeat(2,minmax(0,1fr))!important}}@media(min-width:768px) and (max-width:1023px){#dynamic-page .grid[style*=grid-template-columns]{grid-template-columns:repeat(2,minmax(0,1fr))!important}}@media(min-width:1024px) and (max-width:1279px){#dynamic-page .grid[style*=grid-template-columns]{grid-template-columns:repeat(3,minmax(0,1fr))!important}}@media(min-width:1280px){#dynamic-page .grid[style*=grid-template-columns]{grid-template-columns:repeat(${cols},minmax(0,1fr))!important}}</style></section>`;return;
+            }
+            let filtered=mode==='sinbalon'?gals.filter(g=>['sin balón','sin balon'].includes(normalizarCategoria(g.Categoria_Header))):mode==='cultura'?gals.filter(g=>normalizarCategoria(g.Categoria_Header)==='cultura'):mode==='categoria'?gals.filter(g=>normalizarCategoria(categoriaEfectiva(g))===normalizarCategoria(category)):gals;
+            const hero=mode==='sinbalon'?'<div class="mb-10 text-left w-full"><p class="text-brand-accent text-xs font-bold tracking-widest uppercase">Encuentra tu momento</p><h1 class="text-5xl md:text-7xl font-black text-white mt-2">Sin balón</h1><p class="text-xl text-gray-300 mt-4">Porque el juego también sucede lejos del balón</p></div>':mode==='cultura'?'<div class="mb-10 text-left w-full"><p class="text-brand-accent text-xs font-bold tracking-widest uppercase">Encuentra tu momento</p><h1 class="text-5xl md:text-7xl font-black text-white mt-2">Cultura</h1><p class="text-xl text-gray-300 mt-4">Tradiciones, arte y momentos que forman parte de nuestra historia.</p></div>':`<div class="mb-10 border-b border-zinc-800 pb-5"><p class="text-brand-accent text-xs font-bold tracking-widest uppercase mb-3">TUFOTOENFOCO</p><h1 class="text-4xl md:text-5xl font-black text-white">${mode==='categoria'?category:'Todas las galerías'}</h1><p class="text-gray-400 mt-3">Explora los reportajes disponibles</p></div>`;
+            root.innerHTML=`<section class="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-16 min-h-[70vh]"><div class="w-full">${hero}</div><div class="max-w-xl mb-8 flex gap-2"><div class="relative min-w-0 flex-1"><input id="buscador-eventos" type="search" placeholder="Buscar evento" aria-label="Buscar evento" class="buscador-eventos-input w-full bg-zinc-900 border border-zinc-700 focus:border-brand-accent text-white rounded-lg pl-4 pr-11 py-3 outline-none"><button id="limpiar-buscador-eventos" type="button" aria-label="Borrar búsqueda" title="Borrar búsqueda" hidden class="absolute right-3 top-1/2 -translate-y-1/2 text-brand-accent hover:text-white text-2xl leading-none font-bold transition-colors">×</button></div><button id="btn-buscar-evento" type="button" class="px-6 py-3 bg-brand-accent text-black font-bold rounded-lg hover:bg-white transition-colors">Buscar</button></div><style>.buscador-eventos-input::-webkit-search-cancel-button,.buscador-eventos-input::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}</style><style>#dynamic-gallery-grid article{width:100%;min-width:0}</style><div id="dynamic-gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">${filtered.map(g=>generarTarjetaHTML(g)).join('')||'<p class="text-gray-400 py-8">Todavía no hay galerías en esta sección.</p>'}</div></section>`;
+            const input=document.getElementById('buscador-eventos');const clearButton=document.getElementById('limpiar-buscador-eventos');const runSearch=()=>{const q=input.value.trim().toLocaleLowerCase('es');const found=filtered.filter(g=>String(g.ID_Evento||'').toLocaleLowerCase('es').includes(q)||String(g.Titulo||'').toLocaleLowerCase('es').includes(q));document.getElementById('dynamic-gallery-grid').innerHTML=found.map(g=>generarTarjetaHTML(g)).join('')||'<p class="text-gray-400 py-8">No se han encontrado eventos.</p>';clearButton.hidden=!input.value;};
+            input.addEventListener('input',()=>{clearButton.hidden=!input.value;});
+            clearButton.addEventListener('click',()=>{input.value='';clearButton.hidden=true;runSearch();input.focus();});
+            document.getElementById('btn-buscar-evento').addEventListener('click',runSearch);input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();runSearch();}});
+        }
+
+        function actualizarMenusDinamicos(datos) {
+            const claveMenuCategoria = valor => String(valor || '').trim().toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ');
+            const categoriasPrincipales = [...new Set([...(window.categoriasOrdenadas || []), ...(window.categoriasDisponibles || [])].map(v => String(v || '').trim()).filter(Boolean))]
+                .filter(cat => !['sin balon', 'cultura', 'mas deportes', 'general'].includes(claveMenuCategoria(cat)))
+                .filter(cat => gals.some(e => claveMenuCategoria(e.Categoria_Header) === claveMenuCategoria(cat)));
+            const usadasEnMasDeportes = [...new Set(datos.filter(e => checkIsTrue(e.Es_Mas_Deportes)).map(e => String(e.Categoria_Mas_Deportes || '').trim()).filter(Boolean))];
+            const ordenM = window.categoriasMasDeportesOrdenadas || [];
+            const masDeportes = [...ordenM.filter(item => usadasEnMasDeportes.includes(item)), ...usadasEnMasDeportes.filter(item => !ordenM.includes(item))];
+            const renderLinks = (items, desktopId, mobileId, emptyMsg) => {
+                const desktopCont = document.getElementById(desktopId), mobileCont = document.getElementById(mobileId);
+                if (!desktopCont || !mobileCont) return;
+                if (items.length) {
+                    desktopCont.innerHTML = items.map(item => `<a href="categoria.html?cat=${encodeURIComponent(item)}" class="block px-4 py-2 text-base font-normal text-gray-300 hover:text-brand-accent transition-colors">${item}</a>`).join('');
+                    mobileCont.innerHTML = items.map(item => `<a href="categoria.html?cat=${encodeURIComponent(item)}" class="block px-4 py-2 text-base font-normal text-gray-300 hover:text-brand-accent transition-colors">${item}</a>`).join('');
+                } else {
+                    desktopCont.innerHTML = `<span class="block px-4 py-2 text-sm text-gray-500">${emptyMsg}</span>`;
+                    mobileCont.innerHTML = `<span class="block text-sm text-gray-500 py-1">${emptyMsg}</span>`;
+                }
+            };
+            renderLinks(categoriasPrincipales, 'desktop-dynamic-cats', 'mobile-dynamic-cats', 'Sin categorías');
+            renderLinks(masDeportes, 'desktop-mas-deportes-menu', 'mobile-mas-deportes-menu', 'Próximamente');
+        }
+
+        function generarTarjetaHTML(evento) {
+            const categoriasTarjeta = categoriasParaTarjeta(evento);
+            const cColor = "bg-black/80 text-white", bColor = "border-zinc-800";
+            
+            const fot = urlImagenGaleria(evento.Foto_Cabecera || placeholderImagen, evento);
+            const fec = `${evento.Fecha || ''} ${(evento.Fecha && evento.Lugar) ? '•' : ''} ${evento.Lugar || ''}`.trim();
+
+            return `
+                <article onclick="abrirModalGaleria(${evento._id})" class="bg-brand-base rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(241,233,51,0.15)] w-[280px] flex-shrink-0 snap-start select-none flex flex-col min-h-[420px] cursor-pointer relative z-10 ${bColor} hover:border-brand-accent">
+                    <div class="tarjeta-interior h-full flex flex-col">
+                        <div class="relative h-64 overflow-hidden flex-shrink-0 group">
+                            <img src="${fot}" onerror="this.onerror=null;this.src='${placeholderImagen}'" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out" draggable="false">
+                            <div class="absolute top-3 left-3 flex flex-wrap gap-2">
+                                ${categoriasTarjeta.map(categoria => `<a href="categoria.html?cat=${encodeURIComponent(categoria)}" onclick="event.stopPropagation()" class="${cColor} border border-zinc-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm hover:border-brand-accent">${categoria}</a>`).join('')}
+                            </div>
+                        </div>
+                        <div class="p-5 flex flex-col flex-grow group">
+                            <span class="text-brand-accent text-xs font-semibold mb-1">${fec}</span>
+                            <h3 class="text-lg font-bold text-white leading-tight mb-2 group-hover:text-brand-accent transition-colors line-clamp-2">${evento.Titulo || ''}</h3>
+                            <p class="text-sm text-gray-400 line-clamp-2">${evento.Descripcion_Corta || ''}</p>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+    </script>
+
+<script id="caricature-interaction-script">
+(() => {
+  const imagePath = 'assets/caricatura-tufotoenfoco.png';
+  const initialized = new WeakSet();
+  function makeImage(kind) {
+    const image = document.createElement('img');
+    image.className = 'caricature-pop-image';
+    image.src = imagePath;
+    image.alt = 'Caricatura de TUFOTOENFOCO';
+    image.setAttribute('aria-hidden', 'true');
+    return image;
+  }
+  function attachCaricature(trigger, kind) {
+    if (!trigger || initialized.has(trigger)) return;
+    initialized.add(trigger);
+    const image = makeImage(kind);
+    let layer;
+    if (kind === 'footer') {
+      const footer = document.getElementById('main-footer');
+      if (!footer || !footer.parentElement) return;
+      layer = footer.parentElement;
+      layer.classList.add('caricature-footer-wrap');
+      layer.insertBefore(image, footer);
+      footer.style.position = 'relative';
+      footer.style.zIndex = '2';
+    } else {
+      layer = document.createElement('div');
+      layer.className = 'caricature-intro-wrap';
+      trigger.parentNode.insertBefore(layer, trigger);
+      layer.appendChild(image);
+      layer.appendChild(trigger);
+      const syncIntroImagePosition = () => {
+        const layerRect = layer.getBoundingClientRect();
+        const triggerRect = trigger.getBoundingClientRect();
+        const rightInset = Math.max(0, layerRect.right - triggerRect.right) + 10;
+        image.style.right = `${rightInset}px`;
+      };
+      syncIntroImagePosition();
+      window.addEventListener('resize', syncIntroImagePosition, { passive: true });
+      if ('ResizeObserver' in window) {
+        const introResizeObserver = new ResizeObserver(syncIntroImagePosition);
+        introResizeObserver.observe(layer);
+        introResizeObserver.observe(trigger);
+      }
+    }
+    const setOpen = (open) => {
+      trigger.setAttribute('aria-expanded', String(open));
+      image.classList.remove('is-visible', 'is-hiding');
+      image.style.display = 'block';
+      image.style.visibility = 'visible';
+      void image.offsetWidth;
+      image.classList.add(open ? 'is-visible' : 'is-hiding');
+    };
+    const toggle = (event) => {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      setOpen(trigger.getAttribute('aria-expanded') !== 'true');
+    };
+    trigger.addEventListener('click', toggle);
+    if (trigger.tagName !== 'A') {
+      trigger.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(event); }
+      });
+    }
+    image.addEventListener('animationend', (event) => {
+      if (event.animationName === 'caricatureSpringDownCard' || event.animationName === 'caricatureSpringDownFooter') {
+        image.classList.remove('is-hiding');
+        image.style.visibility = 'hidden';
+        image.style.display = 'none';
+      }
+    });
+  }
+  function initIntro() {
+    document.querySelectorAll('.caricature-trigger-intro').forEach(el => attachCaricature(el, 'intro'));
+  }
+  function initFooter() {
+    const footer = document.getElementById('main-footer');
+    const trigger = footer?.querySelector('.caricature-trigger-footer');
+    if (trigger) attachCaricature(trigger, 'footer');
+  }
+  initIntro();
+  initFooter();
+  const footerPlaceholder = document.getElementById('footer-placeholder');
+  if (footerPlaceholder) new MutationObserver(initFooter).observe(footerPlaceholder, { childList: true, subtree: true });
+  document.addEventListener('DOMContentLoaded', () => { initIntro(); initFooter(); });
+})();
+</script>
+
+</body>
+</html>

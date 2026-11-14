@@ -1,0 +1,62 @@
+<!-- Componente único de contacto: formulario, confirmación y error -->
+    <div id="modal-contacto" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm hidden flex items-start sm:items-center justify-center p-3 sm:p-4 opacity-0 transition-opacity duration-300 overflow-y-auto overscroll-contain">
+        <div class="bg-brand-base border border-zinc-800 rounded-2xl p-5 sm:p-10 max-w-lg w-full max-h-[calc(100dvh-1.5rem)] sm:max-h-[90vh] overflow-y-auto overscroll-contain relative transform scale-95 transition-transform duration-300 shadow-2xl my-auto">
+            <button id="btn-cerrar-contacto" class="absolute top-4 right-4 text-gray-400 hover:text-brand-accent transition-colors focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-3xl font-black text-white mb-2 tracking-tight">Hablemos.</h3>
+            <p class="text-gray-400 text-sm mb-5">Rellena el formulario y me pondré en contacto contigo lo antes posible.</p>
+            <div class="mb-7 rounded-lg border border-brand-accent/40 bg-brand-accent/5 px-4 py-3 shadow-[0_0_18px_rgba(241,233,51,0.05)]">
+                <p class="text-brand-accent text-xs font-bold uppercase tracking-wider mb-1">Solicitud de retirada de fotografías</p>
+                <p class="text-gray-300 text-sm leading-relaxed">Si deseas solicitar la retirada de una fotografía en la que aparezcas, indícame en el mensaje el nombre del álbum y el nombre de la fotografía para poder localizarla.</p>
+            </div>
+            <form id="form-contacto" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">Tu nombre</label>
+                    <input type="text" id="form-nombre" name="nombre" required class="w-full bg-[#121212] border border-zinc-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-accent transition-colors placeholder-gray-600" placeholder="Ej. Jose Antonio">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">Tu correo electrónico</label>
+                    <input type="email" id="form-email" name="email" required class="w-full bg-[#121212] border border-zinc-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-accent transition-colors placeholder-gray-600" placeholder="ejemplo@correo.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">Asunto</label>
+                    <input type="text" id="form-asunto" name="asunto" required class="w-full bg-[#121212] border border-zinc-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-accent transition-colors placeholder-gray-600" placeholder="¿En qué te puedo ayudar?">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">Mensaje</label>
+                    <textarea id="form-mensaje" name="mensaje" required rows="4" class="w-full bg-[#121212] border border-zinc-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-accent transition-colors resize-none placeholder-gray-600" placeholder="Cuéntame los detalles..."></textarea>
+                </div>
+                <button type="submit" id="btn-enviar-contacto" class="w-full bg-brand-accent text-black font-bold uppercase tracking-widest py-4 rounded-lg hover:bg-white transition-colors mt-2 flex items-center justify-center gap-2">
+                    <span>Enviar mensaje</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="modal-exito" class="fixed inset-0 z-[110] bg-black/90 backdrop-blur-sm hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-brand-base border border-zinc-800 rounded-2xl p-8 max-w-sm w-full relative transform scale-95 transition-transform duration-300 shadow-2xl text-center">
+            <div class="w-16 h-16 bg-brand-accent rounded-full flex items-center justify-center mx-auto mb-5 text-black shadow-[0_0_15px_rgba(241,233,51,0.3)]">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h3 class="text-2xl font-black text-white mb-2 tracking-tight">¡Enviado!</h3>
+            <p class="text-gray-400 text-sm mb-8">Tu mensaje ha sido enviado correctamente. Te responderé pronto.</p>
+            <button id="btn-cerrar-exito" class="w-full bg-transparent border border-zinc-700 text-white font-bold uppercase tracking-widest py-3 rounded-lg hover:border-brand-accent hover:text-brand-accent transition-colors focus:outline-none">
+                Aceptar
+            </button>
+        </div>
+    </div>
+    
+    <div id="modal-error" class="fixed inset-0 z-[110] bg-black/90 backdrop-blur-sm hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-brand-base border border-zinc-800 rounded-2xl p-8 max-w-sm w-full relative transform scale-95 transition-transform duration-300 shadow-2xl text-center">
+            <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-5 text-black shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </div>
+            <h3 class="text-2xl font-black text-white mb-2 tracking-tight">Error de envío</h3>
+            <p class="text-gray-400 text-sm mb-8">No se ha podido conectar con el servidor. Por favor, inténtalo más tarde o contáctame por redes sociales.</p>
+            <button id="btn-cerrar-error" class="w-full bg-transparent border border-red-500 text-white font-bold uppercase tracking-widest py-3 rounded-lg hover:bg-red-500 hover:text-black transition-colors focus:outline-none">
+                Aceptar
+            </button>
+        </div>
+    </div>
+
