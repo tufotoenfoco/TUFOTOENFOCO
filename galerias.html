@@ -248,7 +248,7 @@
 </head>
 <body data-page="galerias" class="bg-zinc-950 text-gray-200 font-sans antialiased flex flex-col min-h-screen">
     <div id="pantalla-carga" class="fixed inset-0 bg-zinc-950 z-[9999] flex flex-col items-center justify-center">
-        <img src="https://raw.githubusercontent.com/tufotoenfoco/TUFOTOENFOCO/refs/heads/main/assets/LogoWebTuFotoEnFoco.png" alt="TUFOTOENFOCO" class="h-16 md:h-20 w-auto animate-latido mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+        <img src="/assets/LogoWebTuFotoEnFoco.png" alt="TUFOTOENFOCO" class="h-16 md:h-20 w-auto animate-latido mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
         <div class="w-32 h-1 bg-zinc-800 rounded-full overflow-hidden"><div class="h-full bg-brand-accent w-1/3 rounded-full animate-[ping_1.5s_cubic-bezier(0,0,0.2,1)_infinite] mx-auto"></div></div>
     </div>
 
@@ -555,7 +555,7 @@
     <div id="contacto-component"></div>
     <script>
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8mylASNDJZjSrcN_rayfjN38bWFixXghqU5sP86QVUDbGWHSK_0gL0-RBlFezr07X/exec';
-        const DATOS_JSON_URL = 'https://raw.githubusercontent.com/tufotoenfoco/TUFOTOENFOCO/main/datos.json';
+        const DATOS_JSON_URL = '/datos.json';
         const placeholderImagen = "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20600%20400%27%3E%3Crect%20width%3D%27600%27%20height%3D%27400%27%20fill%3D%27%2352525b%27%2F%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23a1a1aa%27%20stroke-width%3D%2712%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20transform%3D%27translate%28210%20125%29%27%3E%3Cpath%20d%3D%27M160%20150H20a18%2018%200%200%201-18-18V45a18%2018%200%200%201%2018-18h34L76%202h52l22%2025h10a18%2018%200%200%201%2018%2018v87a18%2018%200%200%201-18%2018Z%27%2F%3E%3Ccircle%20cx%3D%2790%27%20cy%3D%2788%27%20r%3D%2735%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E";
         const svgCamara = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233f3f46' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/%3E%3Ccircle cx='12' cy='13' r='4'/%3E%3C/svg%3E";
 
@@ -600,55 +600,36 @@
                 .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
             return `tf_${encoded}`;
         }
-        const NETLIFY_IMAGE_BASE = 'https://tufotoenfoco.netlify.app/.netlify/functions/';
-        const TFE_CLOUDFLARE_HOST = 'tufotoenfoco-galeria.tufotoenfoco.workers.dev';
-        const TFE_B2_HOST = 'f003.backblazeb2.com';
-        const TFE_BUCKET_PREFIX = '/file/tufotoenfocogaleria/';
-
-        // Las imágenes del bucket B2 se obtienen SIEMPRE mediante el Worker de Cloudflare.
-        // Netlify imagen.mjs solo acepta el host del Worker, no el host público directo de B2.
-        function prepararOrigenParaNetlify(url) {
+        const NETLIFY_IMAGE_BASE = 'https://tufotoenfoco-galeria.tufotoenfoco.workers.dev/';
+        function urlImagenGaleria(url, evento) {
             const source = String(url || '').trim();
-            const parsed = new URL(source);
-            const host = parsed.hostname.toLowerCase();
-            const path = parsed.pathname.toLowerCase();
-            const esBucketTFE = path.startsWith(TFE_BUCKET_PREFIX);
-
-            if (esBucketTFE && (host === TFE_B2_HOST || host === TFE_CLOUDFLARE_HOST)) {
-                parsed.protocol = 'https:';
-                parsed.hostname = TFE_CLOUDFLARE_HOST;
-                parsed.port = '';
-                return { source: parsed.toString(), endpoint: 'imagen' };
-            }
-            return { source, endpoint: 'imagen-externa' };
-        }
-
-        function codificarUrlNetlify(source) {
-            return btoa(unescape(encodeURIComponent(source)))
+            if (!source || !/^https?:\/\//i.test(source) || !eventoTieneMarcaAgua(evento)) return source;
+            let endpoint = 'imagen-externa';
+            try {
+                const parsed = new URL(source);
+                if (parsed.hostname.toLowerCase() === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
+            } catch (_) { return source; }
+            const encodedSource = btoa(unescape(encodeURIComponent(source)))
                 .replace(/\+/g, '-')
                 .replace(/\//g, '_')
                 .replace(/=+$/g, '');
-        }
-
-        function urlImagenGaleria(url, evento) {
-            const original = String(url || '').trim();
-            if (!original || !/^https?:\/\//i.test(original) || !eventoTieneMarcaAgua(evento)) return original;
-            try {
-                const route = prepararOrigenParaNetlify(original);
-                const encodedSource = codificarUrlNetlify(route.source);
-                return `${NETLIFY_IMAGE_BASE}${route.endpoint}?watermark=1&url64=${encodedSource}`;
-            } catch (_) { return original; }
+            return `${NETLIFY_IMAGE_BASE}${endpoint}?watermark=1&url64=${encodedSource}`;
         }
 
         function urlDescargaFoto(url, evento) {
-            const original = String(url || '').trim();
-            if (!original || !/^https?:\/\//i.test(original)) return original;
+            const source = String(url || '').trim();
+            if (!source || !/^https?:\/\//i.test(source)) return source;
+            let endpoint = 'imagen-externa';
             try {
-                const route = prepararOrigenParaNetlify(original);
-                const encodedSource = codificarUrlNetlify(route.source);
-                const watermark = eventoTieneMarcaAgua(evento) ? '&watermark=1' : '';
-                return `${NETLIFY_IMAGE_BASE}${route.endpoint}?download=1${watermark}&url64=${encodedSource}`;
-            } catch (_) { return original; }
+                const parsed = new URL(source);
+                if (parsed.hostname.toLowerCase() === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
+            } catch (_) { return source; }
+            const encodedSource = btoa(unescape(encodeURIComponent(source)))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/g, '');
+            const watermark = eventoTieneMarcaAgua(evento) ? '&watermark=1' : '';
+            return `${NETLIFY_IMAGE_BASE}${endpoint}?download=1${watermark}&url64=${encodedSource}`;
         }
 
 
@@ -1298,7 +1279,7 @@
             pantalla.innerHTML = `
                 <div class="w-full max-w-2xl mx-auto text-center flex flex-col items-center">
                     <a href="index.html" aria-label="TuFotoEnFoco - Inicio" class="inline-flex justify-center mb-10">
-                        <img src="https://raw.githubusercontent.com/tufotoenfoco/TUFOTOENFOCO/refs/heads/main/assets/LogoWebTuFotoEnFoco.png"
+                        <img src="/assets/LogoWebTuFotoEnFoco.png"
                              alt="TuFotoEnFoco" class="h-16 sm:h-20 w-auto max-w-full object-contain drop-shadow-[0_0_18px_rgba(241,233,51,0.12)]">
                     </a>
                     <div class="w-16 h-1 rounded-full bg-brand-accent mb-8 shadow-[0_0_16px_rgba(241,233,51,0.35)]"></div>
