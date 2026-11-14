@@ -607,7 +607,14 @@
             let endpoint = 'imagen-externa';
             try {
                 const parsed = new URL(source);
-                if (parsed.hostname.toLowerCase() === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
+                const host = parsed.hostname.toLowerCase();
+                const path = parsed.pathname.toLowerCase();
+                if ((host === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' || host === 'f003.backblazeb2.com') && path.startsWith('/file/tufotoenfocogaleria/')) {
+                    // Netlify obtiene siempre el original a través del Worker de Cloudflare.
+                    parsed.hostname = 'tufotoenfoco-galeria.tufotoenfoco.workers.dev';
+                    parsed.protocol = 'https:'; parsed.port = '';
+                    endpoint = 'imagen'; source = parsed.toString();
+                }
             } catch (_) { return source; }
             const encodedSource = btoa(unescape(encodeURIComponent(source)))
                 .replace(/\+/g, '-')
@@ -622,7 +629,14 @@
             let endpoint = 'imagen-externa';
             try {
                 const parsed = new URL(source);
-                if (parsed.hostname.toLowerCase() === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
+                const host = parsed.hostname.toLowerCase();
+                const path = parsed.pathname.toLowerCase();
+                if ((host === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' || host === 'f003.backblazeb2.com') && path.startsWith('/file/tufotoenfocogaleria/')) {
+                    // Netlify obtiene siempre el original a través del Worker de Cloudflare.
+                    parsed.hostname = 'tufotoenfoco-galeria.tufotoenfoco.workers.dev';
+                    parsed.protocol = 'https:'; parsed.port = '';
+                    endpoint = 'imagen'; source = parsed.toString();
+                }
             } catch (_) { return source; }
             const encodedSource = btoa(unescape(encodeURIComponent(source)))
                 .replace(/\+/g, '-')

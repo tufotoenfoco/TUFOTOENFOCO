@@ -66,17 +66,12 @@ function contentTypeFromFormat(format, fallback = "application/octet-stream") {
   const map = { jpeg: "image/jpeg", jpg: "image/jpeg", png: "image/png", webp: "image/webp", avif: "image/avif", tiff: "image/tiff", gif: "image/gif", heif: "image/heif" };
   return map[String(format || "").toLowerCase()] || fallback;
 }
-function encodeImageInOriginalFormat(pipeline, format) {
-  switch (String(format || "").toLowerCase()) {
-    case "jpeg": case "jpg": return pipeline.jpeg({ quality: 92, mozjpeg: true });
-    case "png": return pipeline.png({ compressionLevel: 9 });
-    case "webp": return pipeline.webp({ quality: 90 });
-    case "avif": return pipeline.avif({ quality: 85 });
-    case "tiff": return pipeline.tiff({ compression: "lzw" });
-    case "gif": return pipeline.gif();
-    case "heif": return pipeline.heif({ quality: 85 });
-    default: return pipeline.jpeg({ quality: 92, mozjpeg: true });
-  }
+function encodeImageForWeb(pipeline) {
+  // Optimiza la salida para no rebasar el límite de respuesta binaria de Netlify.
+  // Mantiene proporción y nunca amplía fotografías pequeñas.
+  return pipeline
+    .resize({ width: 2400, height: 2400, fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 82, effort: 4 });
 }
 
 export default async (request) => {
@@ -169,13 +164,12 @@ export default async (request) => {
     const left = Math.max(0, Math.round((metadata.width - (logoMeta.width || logoWidth)) / 2));
     const top = Math.max(0, Math.round((metadata.height - (logoMeta.height || 1)) / 2));
 
-    const output = await encodeImageInOriginalFormat(
+    const output = await encodeImageForWeb(
       sharp(input, { animated: false, limitInputPixels: 40000000 })
-        .composite([{ input: overlay, left, top }]),
-      originalFormat
+        .composite([{ input: overlay, left, top }])
     ).toBuffer();
-    const outputType = contentTypeFromFormat(originalFormat, contentType);
-    const outputExtension = extensionFromFormat(originalFormat);
+    const outputType = "image/webp";
+    const outputExtension = "webp";
 
     return new Response(output, {
       status: 200,
