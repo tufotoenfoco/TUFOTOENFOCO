@@ -600,20 +600,35 @@
                 .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
             return `tf_${encoded}`;
         }
-        const NETLIFY_IMAGE_BASE = 'https://tufotoenfoco-galeria.tufotoenfoco.workers.dev/';
+        const CLOUDFLARE_IMAGE_BASE = 'https://tufotoenfoco-galeria.tufotoenfoco.workers.dev';
         function urlImagenGaleria(url, evento) {
             const source = String(url || '').trim();
-            if (!source || !/^https?:\/\//i.test(source) || !eventoTieneMarcaAgua(evento)) return source;
+            if (!source || !/^https?:\/\//i.test(source)) return source;
+            let parsed;
+            try { parsed = new URL(source); } catch (_) { return source; }
+
+            const isB2Photo = parsed.protocol === 'https:' &&
+                parsed.hostname.toLowerCase() === 'f003.backblazeb2.com' &&
+                parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/');
+            const isWorkerPhoto = parsed.hostname.toLowerCase() === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' &&
+                parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/');
+            const isHeaderPhoto = evento && String(evento.Foto_Cabecera || '').trim() === source;
+            const hasWatermark = eventoTieneMarcaAgua(evento);
+
+            // Solo las imágenes de cabecera (columna H / Foto_Cabecera) pasan por el proxy
+            // directo de Cloudflare cuando no necesitan marca de agua.
+            if (isHeaderPhoto && isB2Photo && !hasWatermark) {
+                return `${CLOUDFLARE_IMAGE_BASE}${parsed.pathname}${parsed.search}`;
+            }
+
+            if (!hasWatermark) return source;
             let endpoint = 'imagen-externa';
-            try {
-                const parsed = new URL(source);
-                if (parsed.hostname.toLowerCase() === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
-            } catch (_) { return source; }
+            if (isWorkerPhoto) endpoint = 'imagen';
             const encodedSource = btoa(unescape(encodeURIComponent(source)))
                 .replace(/\+/g, '-')
                 .replace(/\//g, '_')
                 .replace(/=+$/g, '');
-            return `${NETLIFY_IMAGE_BASE}${endpoint}?watermark=1&url64=${encodedSource}`;
+            return `${CLOUDFLARE_IMAGE_BASE}/${endpoint}?watermark=1&url64=${encodedSource}`;
         }
 
         function urlDescargaFoto(url, evento) {
