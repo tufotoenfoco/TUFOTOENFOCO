@@ -608,7 +608,7 @@
                 return '';
             }
         }
-        const NETLIFY_IMAGE_BASE = 'https://worker.tufotoenfoco.com/';
+        const IMAGE_WORKER_BASE = 'https://worker.tufotoenfoco.com/';
         function urlImagenGaleria(url, evento) {
             const source = String(url || '').trim();
             if (!source || !/^https?:\/\//i.test(source)) return source;
@@ -637,7 +637,7 @@
             const params = new URLSearchParams();
             if (watermark) params.set('watermark', watermark);
             params.set('url64', encodedSource);
-            return `${NETLIFY_IMAGE_BASE}${endpoint}?${params.toString()}`;
+            return `${IMAGE_WORKER_BASE}${endpoint}?${params.toString()}`;
         }
 
         function urlDescargaFoto(url, evento) {
@@ -653,7 +653,7 @@
                 .replace(/\//g, '_')
                 .replace(/=+$/g, '');
             const watermark = eventoTieneMarcaAgua(evento) ? '&watermark=1' : '';
-            return `${NETLIFY_IMAGE_BASE}${endpoint}?download=1${watermark}&url64=${encodedSource}`;
+            return `${IMAGE_WORKER_BASE}${endpoint}?download=1${watermark}&url64=${encodedSource}`;
         }
 
 
