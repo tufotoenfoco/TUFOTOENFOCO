@@ -1,6 +1,4 @@
-/* TuFotoEnFoco - caché local inteligente para datos.json.
-   Estrategia stale-while-revalidate: muestra al instante la última copia válida
-   y actualiza la caché en segundo plano cuando el JSON del repositorio cambia. */
+
 (() => {
   'use strict';
   const CACHE_NAME = 'tufotoenfoco-datos-v1';
@@ -54,7 +52,6 @@
 
     const savedAt = Number(cached.headers.get('X-TFE-Cached-At') || 0);
     if (Date.now() - savedAt > MAX_AGE_MS) {
-      // La copia está caducada: intenta actualizarla y conserva la anterior si falla.
       try {
         return await descargar(url, cache);
       } catch (error) {

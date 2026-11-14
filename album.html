@@ -58,7 +58,7 @@
             transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
         }
 
-        /* Carruseles centrados y navegación por tarjetas */
+        
         .carrusel-principal { scroll-padding-inline: 50%; }
         .carrusel-principal > article { scroll-snap-align: center; }
         @media (max-width: 767px) {
@@ -96,7 +96,7 @@
             #header-logo-container img { max-width:100%; height:auto; }
             #nav-links-container { flex:1 1 auto; min-width:0; }
         }
-        /* Contenido adaptable a resoluciones de escritorio */
+        
         @media (min-width: 1200px) {
             .max-w-\[1600px\] { max-width: min(98vw, 1900px) !important; }
             .max-w-\[95\%\] { max-width: 98vw !important; }
@@ -121,7 +121,7 @@
 </style>
 
 <style id="contact-modal-no-visible-scrollbar">
-/* Modal de contacto: sin barra visible y con desplazamiento solo cuando la pantalla no permite mostrarlo completo */
+
 #modal-contacto { box-sizing:border-box !important; align-items:center !important; justify-content:center !important; overflow:hidden !important; padding:16px !important; }
 #modal-contacto > div { box-sizing:border-box !important; width:min(100%, 32rem) !important; max-height:calc(100dvh - 32px) !important; overflow-y:auto !important; overflow-x:hidden !important; overscroll-behavior:contain; scrollbar-width:none !important; -ms-overflow-style:none !important; padding:clamp(18px, 2.2vh, 28px) clamp(18px, 2vw, 30px) !important; margin:0 auto !important; }
 #modal-contacto > div::-webkit-scrollbar, #modal-contacto::-webkit-scrollbar { display:none !important; width:0 !important; height:0 !important; }
@@ -140,7 +140,7 @@
 </style>
 
 <style id="caricature-interaction-styles">
-/* La imagen vive en una capa hermana: el fondo del panel/footer se pinta por delante. */
+
 .caricature-intro-wrap,
 .caricature-footer-wrap {
   position: relative;
@@ -151,7 +151,7 @@
   position: relative !important;
   z-index: 2 !important;
   isolation: isolate;
-  background-color: #09090b; /* Fondo opaco; JS aplica el color alterno dinámico */
+  background-color: #09090b; 
   opacity: 1;
   cursor: pointer;
   transform-origin: center;
@@ -186,7 +186,7 @@
   transform: translate(-50%, 15%) scale(1);
   transform-origin: 50% 100%;
 }
-/* El propio panel/footer tiene una capa superior opaca que oculta la parte solapada. */
+
 .caricature-intro-wrap > .caricature-trigger-intro { z-index: 2 !important; position:relative !important; background-color:#09090b; }
 #main-footer { position: relative; z-index: 2 !important; overflow: visible !important; }
 .caricature-trigger-intro .caricature-pop-image.is-visible,
@@ -206,7 +206,7 @@
   display: block; visibility: visible;
   animation: caricatureSpringDownFooter 1.05s cubic-bezier(.45,0,.75,.4) both;
 }
-/* Entrada elástica controlada: asoma un 95% como máximo y termina con un 85% visible. */
+
 @keyframes caricatureSpringUpCard {
   0%   { opacity:0; transform:translateY(100%) scale(.94) }
   38%  { opacity:1; transform:translateY(5%) scale(1.015) }
@@ -252,7 +252,7 @@
         <div class="w-32 h-1 bg-zinc-800 rounded-full overflow-hidden"><div class="h-full bg-brand-accent w-1/3 rounded-full animate-[ping_1.5s_cubic-bezier(0,0,0.2,1)_infinite] mx-auto"></div></div>
     </div>
 
-    <!-- CONTENEDOR DONDE SE INYECTARÁ EL HEADER -->
+    
     <div id="header-placeholder"></div>
 
     <div id="estado-mensaje" class="hidden flex-grow flex-col items-center justify-center min-h-[60vh] text-center px-6 py-20 bg-zinc-950 relative z-20">
@@ -456,7 +456,7 @@
 
     <main id="dynamic-page" class="hidden bg-zinc-950"></main>
 
-    <!-- CONTENEDOR DONDE SE INYECTARÁ EL FOOTER -->
+    
     <div id="footer-placeholder"></div>
 
     <style>
@@ -564,8 +564,6 @@
         let indexFotoActual = 0;
 
 
-        // La columna G de WEB se publica como Fecha (dd/MM/yyyy o ISO).
-        // Orden descendente: primero la galería con fecha más reciente.
         function fechaGaleriaMs(ev) {
             const value = ev && (ev.Fecha ?? ev.fecha ?? ev.G);
             if (value instanceof Date) return value.getTime();
@@ -628,7 +626,6 @@
             const esArchivoDelWorker = host === workerHost &&
                 parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/');
 
-            // No interceptar enlaces ajenos a Backblaze ni URLs que no sean archivos propios.
             if (!esBackblaze && !esArchivoDelWorker) return source;
 
             const endpoint = esArchivoDelWorker ? 'imagen' : 'imagen-externa';
@@ -931,8 +928,6 @@
             if(!url) return;
             const llevaMarca=eventoTieneMarcaAgua(eventoModalActual);
             const downloadUrl=urlDescargaFoto(url,eventoModalActual);
-            // Abrimos una pestaña vacía durante el gesto del usuario para poder usarla
-            // como alternativa si el navegador o el servidor bloquean la descarga.
             const pestañaAlternativa=window.open('about:blank','_blank');
             const fallbackUrl=llevaMarca ? urlImagenGaleria(url,eventoModalActual) : url;
             try {
@@ -959,7 +954,6 @@
         }
 
 
-        // Carga robusta de componentes compartidos: reintentos independientes y copia local de respaldo.
         async function cargarComponenteCompartido(url, placeholderId, marcador) {
             const destino = document.getElementById(placeholderId);
             if (!destino) return null;
@@ -967,7 +961,6 @@
             let htmlLocal = null;
             try { htmlLocal = localStorage.getItem(cacheKey); } catch (_) {}
 
-            // Mostrar inmediatamente la última versión válida guardada en este navegador.
             if (htmlLocal && htmlLocal.includes(marcador)) destino.innerHTML = htmlLocal;
 
             let ultimoError = null;
@@ -986,7 +979,6 @@
                 }
             }
 
-            // Si falla la red, se conserva la copia local; un componente nunca bloquea a los demás.
             if (!htmlLocal || !htmlLocal.includes(marcador)) {
                 console.error(`No se pudo cargar ${url}:`, ultimoError);
                 return null;
@@ -996,19 +988,16 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // La lectura de datos empieza a la vez que los componentes compartidos.
             const datosCargaPromise = cargarDatosDesdeSheet();
             const toggleClass = (el, cls) => el.classList.toggle(cls);
 
             try {
-                // Cada componente tiene su propia recuperación: un fallo no impide cargar los otros.
                 await Promise.all([
                     cargarComponenteCompartido('contacto.html', 'contacto-component', 'form-contacto'),
                     cargarComponenteCompartido('header.html', 'header-placeholder', 'main-header'),
                     cargarComponenteCompartido('footer.html', 'footer-placeholder', 'main-footer')
                 ]);
 
-                // Los datos pueden haber terminado antes que el header; reconstruimos ahora el menú dinámico.
                 if (Array.isArray(window._tfeGaleriasParaMenu)) {
                     actualizarMenusDinamicos(window._tfeGaleriasParaMenu);
                 }
@@ -1116,7 +1105,6 @@
                 }
             });
 
-            // La descarga de datos ya está en curso desde el inicio del evento.
             await datosCargaPromise;
         });
 
@@ -1181,8 +1169,6 @@
                 gals.forEach((ev, idx) => { ev._id = idx; window.eventosGlobal[idx] = ev; });
                 if (pageMode) { document.getElementById('main-content-sections')?.classList.add('hidden'); if(pageMode==='album') await renderAlbumPage(gals); else renderDynamicPage(pageMode,gals); }
 
-                // La página de álbum es independiente: no debe continuar inicializando
-                // los carruseles y secciones de portada después de renderizar sus fotos.
                 if (pageMode === 'album') {
                     document.getElementById('main-header')?.classList.remove('hidden');
                     document.getElementById('main-footer')?.classList.remove('hidden');
@@ -1227,7 +1213,7 @@
                     if (imgEl) {
                         imgEl.classList.remove('opacity-0');
                         if (srcDato && String(srcDato).trim() !== '') {
-                            imgEl.src = srcDato;
+                            imgEl.src = urlImagenGaleria(srcDato, null);
                             imgEl.className = "w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 cursor-pointer";
                         } else {
                             imgEl.src = placeholderImagen;
@@ -1435,9 +1421,7 @@
             const categoriaM = checkIsTrue(ev.Es_Mas_Deportes) ? String(ev.Categoria_Mas_Deportes||'').trim() : '';
             const esMasDeportes = v => ['mas deportes','más deportes'].includes(String(v||'').trim().toLocaleLowerCase('es'));
             const resultado = [];
-            // La categoría de la columna K aparece primero (a la izquierda).
             if (categoriaK && !esMasDeportes(categoriaK)) resultado.push(categoriaK);
-            // La categoría de la columna M aparece después (a la derecha).
             if (categoriaM && !resultado.some(v => v.toLocaleLowerCase('es') === categoriaM.toLocaleLowerCase('es'))) resultado.push(categoriaM);
             if (!resultado.length && categoriaK) resultado.push(categoriaK);
             return resultado.length ? resultado : ['General'];
