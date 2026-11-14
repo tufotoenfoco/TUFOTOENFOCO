@@ -603,17 +603,34 @@
         const NETLIFY_IMAGE_BASE = 'https://tufotoenfoco-galeria.tufotoenfoco.workers.dev/';
         function urlImagenGaleria(url, evento) {
             const source = String(url || '').trim();
-            if (!source || !/^https?:\/\//i.test(source) || !eventoTieneMarcaAgua(evento)) return source;
-            let endpoint = 'imagen-externa';
+            if (!source || !/^https?:\/\//i.test(source)) return source;
+
+            let parsed;
             try {
-                const parsed = new URL(source);
-                if (parsed.hostname.toLowerCase() === 'tufotoenfoco-galeria.tufotoenfoco.workers.dev' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
-            } catch (_) { return source; }
+                parsed = new URL(source);
+            } catch (_) {
+                return source;
+            }
+
+            const host = parsed.hostname.toLowerCase();
+            const workerHost = 'tufotoenfoco-galeria.tufotoenfoco.workers.dev';
+            const esBackblaze = host === 'f003.backblazeb2.com' || host.endsWith('.backblazeb2.com');
+            const esArchivoDelWorker = host === workerHost &&
+                parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/');
+
+            // No interceptar enlaces ajenos a Backblaze ni URLs que no sean archivos propios.
+            if (!esBackblaze && !esArchivoDelWorker) return source;
+
+            const endpoint = esArchivoDelWorker ? 'imagen' : 'imagen-externa';
             const encodedSource = btoa(unescape(encodeURIComponent(source)))
                 .replace(/\+/g, '-')
                 .replace(/\//g, '_')
                 .replace(/=+$/g, '');
-            return `${NETLIFY_IMAGE_BASE}${endpoint}?watermark=1&url64=${encodedSource}`;
+            const watermark = eventoTieneMarcaAgua(evento) ? '1' : '';
+            const params = new URLSearchParams();
+            if (watermark) params.set('watermark', watermark);
+            params.set('url64', encodedSource);
+            return `${NETLIFY_IMAGE_BASE}${endpoint}?${params.toString()}`;
         }
 
         function urlDescargaFoto(url, evento) {
