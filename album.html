@@ -1071,7 +1071,11 @@
             const opciones = document.getElementById('modal-descarga-opciones');
             document.getElementById('modal-btn-descargar').addEventListener('click',()=>{
                 const buy=document.getElementById('descarga-opcion-compra');buy.href=urlCompraActual||'#';
-                buy.classList.toggle('hidden',!/^https?:\/\//i.test(urlCompraActual));toggleModal(opciones,true);
+                const hasPurchaseLink=/^https?:\/\//i.test(urlCompraActual);
+                buy.classList.toggle('hidden',!hasPurchaseLink);
+                if(hasPurchaseLink){toggleModal(opciones,true);return;}
+                tfeRegistrarEstadistica('free',eventoModalActual,'descarga_gratis');
+                descargarFotoSeleccionada();
             });
             document.getElementById('descarga-opcion-volver').addEventListener('click',()=>toggleModal(opciones,false));
             document.getElementById('descarga-opcion-gratis').addEventListener('click',()=>{tfeRegistrarEstadistica('free',eventoModalActual,'descarga_gratis');toggleModal(opciones,false);descargarFotoSeleccionada();});
