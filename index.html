@@ -721,18 +721,32 @@
 
         function urlDescargaFoto(url, evento) {
             const source = String(url || '').trim();
-            if (!source || !/^https?:\/\//i.test(source)) return source;
-            let endpoint = 'imagen-externa';
-            try {
-                const parsed = new URL(source);
-                if (parsed.hostname.toLowerCase() === 'worker.tufotoenfoco.com' && parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/')) endpoint = 'imagen';
-            } catch (_) { return source; }
+            if (!source || !/^https?:\/\//i.test(source)) return '';
+            let parsed;
+            try { parsed = new URL(source); } catch (_) { return ''; }
+            const host = parsed.hostname.toLowerCase();
+            const esBackblaze = host === 'f003.backblazeb2.com' || host.endsWith('.backblazeb2.com');
+            const esArchivoDelWorker = host === 'worker.tufotoenfoco.com' &&
+                parsed.pathname.toLowerCase().startsWith('/file/tufotoenfocogaleria/');
+            if ((!esBackblaze && !esArchivoDelWorker) || !parsed.pathname.startsWith('/file/tufotoenfocogaleria/')) return '';
+            const endpoint = esArchivoDelWorker ? 'imagen' : 'imagen-externa';
             const encodedSource = btoa(unescape(encodeURIComponent(source)))
                 .replace(/\+/g, '-')
                 .replace(/\//g, '_')
                 .replace(/=+$/g, '');
-            const watermark = eventoTieneMarcaAgua(evento) ? '&watermark=1' : '';
-            return `${IMAGE_WORKER_BASE}${endpoint}?download=1${watermark}&url64=${encodedSource}`;
+            const params = new URLSearchParams();
+            params.set('download', '1');
+            if (eventoTieneMarcaAgua(evento)) params.set('watermark', '1');
+            params.set('url64', encodedSource);
+            return `${IMAGE_WORKER_BASE}${endpoint}?${params.toString()}`;
+        }
+
+        function urlVistaFotoWorker(url, evento) {
+            const downloadUrl = urlDescargaFoto(url, evento);
+            if (!downloadUrl) return '';
+            const vista = new URL(downloadUrl);
+            vista.searchParams.delete('download');
+            return vista.toString();
         }
 
 
@@ -1032,63 +1046,67 @@
             catch (_) { return 'jpg'; }
         }
 
-        function mostrarAvisoDescarga(fallbackUrl) {
+        function mostrarAvisoDescarga(fallbackUrl, detalle = '', retryUrl = '') {
             document.getElementById('aviso-descarga-tufoto')?.remove();
             const aviso = document.createElement('div');
             aviso.id = 'aviso-descarga-tufoto';
-            aviso.className = 'fixed bottom-5 left-1/2 -translate-x-1/2 z-[9999] w-[calc(100%-2rem)] max-w-lg rounded-xl border border-brand-accent/50 bg-zinc-950 text-white shadow-2xl p-5';
+            aviso.className = 'fixed inset-0 z-[10000] flex items-center justify-center bg-black/85 backdrop-blur-md p-4';
+            const safeUrl = String(fallbackUrl || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeRetryUrl = String(retryUrl || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             aviso.innerHTML = `
-                <div class="flex items-start gap-3">
-                    <div class="mt-0.5 text-brand-accent text-xl" aria-hidden="true">ⓘ</div>
-                    <div class="min-w-0 flex-1">
-                        <p class="text-sm font-bold tracking-wide">TuFotoEnFoco · Descarga alternativa</p>
-                        <p class="mt-1 text-sm leading-relaxed text-zinc-300">No hemos podido iniciar la descarga automática. Puedes abrir la fotografía en una pestaña nueva y guardarla desde allí.</p>
-                        <div class="mt-4 flex flex-wrap gap-3">
-                            <a href="${fallbackUrl.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-md bg-brand-accent px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black hover:bg-white transition-colors">Abrir fotografía</a>
-                            <button type="button" class="rounded-md border border-zinc-700 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-zinc-300 hover:border-white hover:text-white">Cerrar</button>
-                        </div>
+                <div role="dialog" aria-modal="true" aria-labelledby="aviso-descarga-titulo" class="w-full max-w-md rounded-2xl border border-brand-accent/60 bg-zinc-950 p-6 text-white shadow-2xl">
+                    <div class="mb-4 flex items-center gap-3">
+                        <span class="flex h-10 w-10 items-center justify-center rounded-full border border-brand-accent/50 bg-brand-accent/10 text-xl text-brand-accent" aria-hidden="true">!</span>
+                        <div><p id="aviso-descarga-titulo" class="text-sm font-black uppercase tracking-wider text-brand-accent">TuFotoEnFoco · Descarga</p><p class="mt-1 text-xs text-zinc-400">No se ha podido completar la descarga automática</p></div>
+                    </div>
+                    <p class="text-sm leading-relaxed text-zinc-300">El navegador no ha podido descargar la fotografía desde nuestro servidor. Puedes abrirla en otra pestaña y guardarla desde las opciones del navegador.</p>
+                    ${detalle ? `<p class="mt-3 text-xs text-zinc-500">${String(detalle).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</p>` : ''}
+                    <div class="mt-6 flex flex-col gap-3">
+                        ${safeRetryUrl ? `<a href="${safeRetryUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-lg border border-brand-accent px-5 py-3 text-xs font-bold uppercase tracking-wider text-brand-accent transition-colors hover:bg-brand-accent hover:text-black">Reintentar descarga del navegador</a>` : ''}
+                        ${safeUrl ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-lg bg-brand-accent px-5 py-3 text-xs font-black uppercase tracking-wider text-black transition-colors hover:bg-white">Abrir imagen en otra pestaña</a>` : ''}
+                        <button type="button" class="self-center rounded-lg border border-zinc-700 px-5 py-3 text-xs font-bold uppercase tracking-wider text-zinc-300 transition-colors hover:border-white hover:text-white">Cerrar</button>
                     </div>
                 </div>`;
             aviso.querySelector('button').addEventListener('click', () => aviso.remove());
+            aviso.addEventListener('click', e => { if (e.target === aviso) aviso.remove(); });
             document.body.appendChild(aviso);
         }
 
         async function descargarFotoSeleccionada(){
-            const url=arrayFotosActuales[indexFotoActual];
-            if(!url) return;
-            const llevaMarca=eventoTieneMarcaAgua(eventoModalActual);
-            const downloadUrl=urlDescargaFoto(url,eventoModalActual);
-            const pestañaAlternativa=window.open('about:blank','_blank');
-            const fallbackUrl=llevaMarca ? urlImagenGaleria(url,eventoModalActual) : url;
-
-            // En iPhone, abrir la imagen directamente en Safari para usar el visor nativo
-            // y permitir guardarla desde Compartir > Guardar en Fotos.
-            const esIPhone = /iPhone|iPod/i.test(navigator.userAgent) && !window.MSStream;
-            if (esIPhone) {
-                const pestañaNativa = window.open(fallbackUrl, '_blank');
-                if (!pestañaNativa) mostrarAvisoDescarga(fallbackUrl);
+            const url = arrayFotosActuales[indexFotoActual];
+            if (!url) return;
+            const downloadUrl = urlDescargaFoto(url, eventoModalActual);
+            const fallbackUrl = urlVistaFotoWorker(url, eventoModalActual);
+            if (!downloadUrl || !fallbackUrl) {
+                mostrarAvisoDescarga('', 'La dirección de esta fotografía no pertenece al almacenamiento autorizado de la web.');
                 return;
             }
+
+            // Reservamos la pestaña durante el gesto del usuario. Después comprobamos
+            // el archivo en el Worker y navegamos esa pestaña a la ruta de descarga.
+            // Así el navegador gestiona Content-Disposition de forma nativa (también iOS).
+            const pestañaNativa = window.open('about:blank', '_blank');
+            if (!pestañaNativa) {
+                mostrarAvisoDescarga(fallbackUrl, 'El navegador ha bloqueado la ventana de descarga.', downloadUrl);
+                return;
+            }
+
             try {
-                const r=await fetch(downloadUrl,{cache:'no-store'});
-                if(!r.ok) throw new Error(`HTTP ${r.status}`);
-                const blob=await r.blob();
-                if(!blob.size || !String(blob.type||'').startsWith('image/')) throw new Error('Respuesta de imagen no válida');
-                const extension=extensionDesdeMime(blob.type,url);
-                const objectUrl=URL.createObjectURL(blob);
-                const a=document.createElement('a');
-                a.href=objectUrl;
-                a.download=`${eventoModalActual?.ID_Evento||'fotografia'}_${indexFotoActual+1}.${extension}`;
-                document.body.appendChild(a);a.click();a.remove();
-                setTimeout(()=>URL.revokeObjectURL(objectUrl),1500);
-                if(pestañaAlternativa && !pestañaAlternativa.closed) pestañaAlternativa.close();
-            } catch(e) {
-                console.error('No se pudo descargar la fotografía:',e);
-                if(pestañaAlternativa && !pestañaAlternativa.closed) {
-                    pestañaAlternativa.location.replace(fallbackUrl);
-                } else {
-                    mostrarAvisoDescarga(fallbackUrl);
-                }
+                const comprobacion = await fetch(downloadUrl, { method: 'HEAD', cache: 'no-store' });
+                if (!comprobacion.ok) throw new Error(`El servidor respondió HTTP ${comprobacion.status}`);
+                const tipo = String(comprobacion.headers.get('Content-Type') || '').toLowerCase();
+                if (tipo && !tipo.startsWith('image/')) throw new Error('El servidor no ha devuelto un archivo de imagen.');
+                pestañaNativa.location.replace(downloadUrl);
+            } catch (error) {
+                console.error('No se pudo iniciar la descarga desde el Worker:', error);
+                // Segundo intento: reutilizamos la pestaña reservada en el gesto inicial
+                // y la dirigimos a la ruta attachment del Worker. El aviso queda en la
+                // página original como alternativa si el navegador tampoco lo completa.
+                try {
+                    if (pestañaNativa && !pestañaNativa.closed) pestañaNativa.location.replace(downloadUrl);
+                } catch (_) {}
+                mostrarAvisoDescarga(fallbackUrl,
+                    'Se ha realizado un segundo intento mediante la descarga nativa del navegador. Si tampoco funciona, puedes reintentarlo o abrir la imagen desde aquí.', downloadUrl);
             }
         }
 
