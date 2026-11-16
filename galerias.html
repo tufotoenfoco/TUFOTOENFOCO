@@ -992,13 +992,28 @@
                 return;
             }
 
-            // Reservamos la pestaña durante el gesto del usuario. Después comprobamos
-            // el archivo en el Worker y navegamos esa pestaña a la ruta de descarga.
-            // Así el navegador gestiona Content-Disposition de forma nativa (también iOS).
-            const pestañaNativa = window.open('about:blank', '_blank');
-            if (!pestañaNativa) {
-                mostrarAvisoDescarga(fallbackUrl, 'El navegador ha bloqueado la ventana de descarga.', downloadUrl);
-                return;
+            // En iPhone/iPad mantenemos la pestaña nativa: Safari necesita una
+            // navegación de primer nivel para gestionar correctamente ciertos archivos.
+            const esIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            let pestañaNativa = null;
+            let marcoDescarga = null;
+
+            if (esIOS) {
+                // Se reserva durante el gesto del usuario para evitar el bloqueo de popups.
+                pestañaNativa = window.open('about:blank', '_blank');
+                if (!pestañaNativa) {
+                    mostrarAvisoDescarga(fallbackUrl, 'El navegador ha bloqueado la ventana de descarga.', downloadUrl);
+                    return;
+                }
+            } else {
+                // En escritorio y Android usamos un iframe invisible. La descarga
+                // sigue llegando desde el Worker, pero no abre una pestaña en blanco.
+                marcoDescarga = document.createElement('iframe');
+                marcoDescarga.setAttribute('aria-hidden', 'true');
+                marcoDescarga.tabIndex = -1;
+                marcoDescarga.style.cssText = 'position:fixed;width:1px;height:1px;left:-10000px;top:-10000px;border:0;visibility:hidden;';
+                document.body.appendChild(marcoDescarga);
             }
 
             try {
@@ -1006,17 +1021,23 @@
                 if (!comprobacion.ok) throw new Error(`El servidor respondió HTTP ${comprobacion.status}`);
                 const tipo = String(comprobacion.headers.get('Content-Type') || '').toLowerCase();
                 if (tipo && !tipo.startsWith('image/')) throw new Error('El servidor no ha devuelto un archivo de imagen.');
-                pestañaNativa.location.replace(downloadUrl);
+
+                if (esIOS) {
+                    pestañaNativa.location.replace(downloadUrl);
+                } else {
+                    marcoDescarga.src = downloadUrl;
+                    // El iframe solo sirve como transporte de la descarga; se retira
+                    // después para no dejar elementos residuales en el documento.
+                    window.setTimeout(() => marcoDescarga?.remove(), 60000);
+                }
             } catch (error) {
                 console.error('No se pudo iniciar la descarga desde el Worker:', error);
-                // Segundo intento: reutilizamos la pestaña reservada en el gesto inicial
-                // y la dirigimos a la ruta attachment del Worker. El aviso queda en la
-                // página original como alternativa si el navegador tampoco lo completa.
-                try {
-                    if (pestañaNativa && !pestañaNativa.closed) pestañaNativa.location.replace(downloadUrl);
-                } catch (_) {}
+                if (marcoDescarga) marcoDescarga.remove();
+                if (esIOS && pestañaNativa && !pestañaNativa.closed) {
+                    try { pestañaNativa.location.replace(downloadUrl); } catch (_) {}
+                }
                 mostrarAvisoDescarga(fallbackUrl,
-                    'Se ha realizado un segundo intento mediante la descarga nativa del navegador. Si tampoco funciona, puedes reintentarlo o abrir la imagen desde aquí.', downloadUrl);
+                    'No se ha podido verificar el archivo en el primer intento. Puedes reintentar la descarga o abrir la imagen desde aquí.', downloadUrl);
             }
         }
 
