@@ -1374,9 +1374,17 @@
                 indexFotoActual=selected;
                 eventoModalActual=ev;
                 urlCompraActual=linkCompra;
+                const hasPurchaseLink=/^https?:\/\//i.test(linkCompra);
+                // Igualar el comportamiento de las tarjetas: solo mostrar la confirmación
+                // cuando el evento dispone de un enlace de compra válido en la columna Q.
+                if(!hasPurchaseLink){
+                    tfeRegistrarEstadistica('free',eventoModalActual,'descarga_gratis');
+                    descargarFotoSeleccionada();
+                    return;
+                }
                 const buy=document.getElementById('descarga-opcion-compra');
-                buy.href=linkCompra||'#';
-                buy.classList.toggle('hidden',!/^https?:\/\//i.test(linkCompra));
+                buy.href=linkCompra;
+                buy.classList.remove('hidden');
                 const options=document.getElementById('modal-descarga-opciones');
                 if(options.parentElement!==document.body) document.body.appendChild(options);
                 options.style.zIndex='99999';
