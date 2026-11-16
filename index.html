@@ -1060,6 +1060,15 @@
             const downloadUrl=urlDescargaFoto(url,eventoModalActual);
             const pestañaAlternativa=window.open('about:blank','_blank');
             const fallbackUrl=llevaMarca ? urlImagenGaleria(url,eventoModalActual) : url;
+
+            // En iPhone, abrir la imagen directamente en Safari para usar el visor nativo
+            // y permitir guardarla desde Compartir > Guardar en Fotos.
+            const esIPhone = /iPhone|iPod/i.test(navigator.userAgent) && !window.MSStream;
+            if (esIPhone) {
+                const pestañaNativa = window.open(fallbackUrl, '_blank');
+                if (!pestañaNativa) mostrarAvisoDescarga(fallbackUrl);
+                return;
+            }
             try {
                 const r=await fetch(downloadUrl,{cache:'no-store'});
                 if(!r.ok) throw new Error(`HTTP ${r.status}`);
