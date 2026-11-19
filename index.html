@@ -401,9 +401,9 @@
         <section id="seccion-patrocinadores-1" class="sponsors-section alternating-section py-12 lg:py-16 border-b border-zinc-800 transition-colors duration-300" style="display:none;">
             <div class="max-w-[95%] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-center items-center mb-4">
-                    <h2 class="text-xl sm:text-2xl font-bold text-white tracking-wide uppercase">Nuestros patrocinadores</h2>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white tracking-wide uppercase">Nuestros colaboradores</h2>
                 </div>
-                <div id="patrocinadores-1" class="sponsors-viewport" aria-label="Patrocinadores"></div>
+                <div id="patrocinadores-1" class="sponsors-viewport" aria-label="Colaboradores"></div>
             </div>
         </section>
 
@@ -1291,6 +1291,25 @@
         });
 
 
+        function urlLogoPatrocinador(url) {
+            const source = String(url || '').trim();
+            if (!source || !/^https?:\/\//i.test(source)) return source;
+            let parsed;
+            try { parsed = new URL(source); } catch (_) { return source; }
+
+            const host = parsed.hostname.toLowerCase();
+            const esBackblaze = host === 'f003.backblazeb2.com' || host.endsWith('.backblazeb2.com');
+            if (!esBackblaze || !parsed.pathname.startsWith('/file/tufotoenfocogaleria/')) return source;
+
+            const encodedSource = btoa(unescape(encodeURIComponent(source)))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/g, '');
+            const params = new URLSearchParams();
+            params.set('url64', encodedSource);
+            return `${IMAGE_WORKER_BASE}imagen-externa?${params.toString()}`;
+        }
+
         function renderPatrocinadores(containerId, patrocinadores) {
             const container = document.getElementById(containerId);
             const section = container && container.closest('.sponsors-section');
@@ -1321,7 +1340,7 @@
                 frame.className = 'sponsor-logo-frame';
                 const img = document.createElement('img');
                 img.className = 'sponsor-logo';
-                img.src = p.logo;
+                img.src = urlLogoPatrocinador(p.logo);
                 img.alt = p.nombre;
                 img.loading = duplicate ? 'eager' : 'lazy';
                 img.decoding = 'async';
@@ -1381,8 +1400,8 @@
             clearTimeout(patrocinadoresResizeTimer);
             patrocinadoresResizeTimer = setTimeout(() => {
                 if (window._patrocinadoresData) {
-                    renderPatrocinadores('patrocinadores-1', window._patrocinadoresData.patrocinadores1);
-                    renderPatrocinadores('patrocinadores-2', window._patrocinadoresData.patrocinadores2);
+                    renderPatrocinadores('patrocinadores-1', window._patrocinadoresData.colaboradores || window._patrocinadoresData.patrocinadores1);
+                    renderPatrocinadores('patrocinadores-2', window._patrocinadoresData.patrocinadores || window._patrocinadoresData.patrocinadores2);
                 }
             }, 180);
         });
@@ -1398,8 +1417,8 @@
                 const pageMode = document.body.dataset.page || '';
                 window._patrocinadoresData = data;
                 if (!pageMode) {
-                    renderPatrocinadores('patrocinadores-1', data.patrocinadores1 || []);
-                    renderPatrocinadores('patrocinadores-2', data.patrocinadores2 || []);
+                    renderPatrocinadores('patrocinadores-1', data.colaboradores || data.patrocinadores1 || []);
+                    renderPatrocinadores('patrocinadores-2', data.patrocinadores || data.patrocinadores2 || []);
                 }
 
                 const gWeb = data.gestionWeb || {};
