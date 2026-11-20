@@ -1291,6 +1291,15 @@
         });
 
 
+        function esEnlaceWebPropia(url) {
+            try {
+                const host = new URL(String(url || '').trim()).hostname.toLowerCase();
+                return host === 'tufotoenfoco.com' || host === 'www.tufotoenfoco.com';
+            } catch (_) {
+                return false;
+            }
+        }
+
         function urlLogoPatrocinador(url) {
             const source = String(url || '').trim();
             if (!source || !/^https?:\/\//i.test(source)) return source;
@@ -1332,8 +1341,16 @@
                 item.className = 'sponsor-item';
                 if (destinoValido) {
                     item.href = p.enlace;
-                    item.target = '_blank';
-                    item.rel = 'noopener noreferrer';
+                    if (esEnlaceWebPropia(p.enlace)) {
+                        item.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            toggleModal(document.getElementById('modal-contacto'), true);
+                        });
+                        item.setAttribute('aria-label', 'Abrir formulario de contacto');
+                    } else {
+                        item.target = '_blank';
+                        item.rel = 'noopener noreferrer';
+                    }
                 }
                 item.setAttribute('aria-label', p.nombre
                     ? (p.nombre + (destinoValido ? ' — abrir página' : ''))
