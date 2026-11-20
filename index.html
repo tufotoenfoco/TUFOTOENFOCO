@@ -1316,9 +1316,7 @@
             if (!container || !section) return;
 
             const items = Array.isArray(patrocinadores) ? patrocinadores.filter(p =>
-                p && p.nombre && p.logo && p.enlace &&
-                /^https?:\/\//i.test(String(p.logo)) &&
-                /^https?:\/\//i.test(String(p.enlace))
+                p && p.logo && /^https?:\/\//i.test(String(p.logo))
             ) : [];
 
             container.replaceChildren();
@@ -1329,33 +1327,41 @@
             section.style.display = '';
 
             const makeItem = (p, duplicate) => {
-                const link = document.createElement('a');
-                link.className = 'sponsor-item';
-                link.href = p.enlace;
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-                link.setAttribute('aria-label', p.nombre + ' — abrir página del patrocinador');
+                const destinoValido = p.enlace && /^https?:\/\//i.test(String(p.enlace));
+                const item = document.createElement(destinoValido ? 'a' : 'div');
+                item.className = 'sponsor-item';
+                if (destinoValido) {
+                    item.href = p.enlace;
+                    item.target = '_blank';
+                    item.rel = 'noopener noreferrer';
+                }
+                item.setAttribute('aria-label', p.nombre
+                    ? (p.nombre + (destinoValido ? ' — abrir página' : ''))
+                    : 'Logotipo');
 
                 const frame = document.createElement('span');
                 frame.className = 'sponsor-logo-frame';
                 const img = document.createElement('img');
                 img.className = 'sponsor-logo';
                 img.src = urlLogoPatrocinador(p.logo);
-                img.alt = p.nombre;
+                img.alt = p.nombre || '';
                 img.loading = duplicate ? 'eager' : 'lazy';
                 img.decoding = 'async';
-                img.onerror = () => { link.style.display = 'none'; };
+                img.onerror = () => { item.style.display = 'none'; };
                 frame.appendChild(img);
+                item.appendChild(frame);
 
-                const name = document.createElement('span');
-                name.className = 'sponsor-name';
-                name.textContent = p.nombre;
-                link.append(frame, name);
-                if (duplicate) {
-                    link.tabIndex = -1;
-                    link.setAttribute('aria-hidden', 'true');
+                if (p.nombre) {
+                    const name = document.createElement('span');
+                    name.className = 'sponsor-name';
+                    name.textContent = p.nombre;
+                    item.appendChild(name);
                 }
-                return link;
+                if (duplicate) {
+                    item.tabIndex = -1;
+                    item.setAttribute('aria-hidden', 'true');
+                }
+                return item;
             };
 
             const track = document.createElement('div');
