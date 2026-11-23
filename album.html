@@ -245,6 +245,95 @@
 }
 </style>
 
+
+<style>
+/* Reproductor móvil en horizontal: paneles independientes con deslizamiento lateral */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 600px) {
+  #album-player-overlay {
+    padding: 0 !important;
+    align-items: stretch !important;
+  }
+  #album-player-overlay > div {
+    width: 100% !important;
+    max-width: none !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+  }
+  #album-player-overlay > div > div:first-child {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 5px 12px !important;
+  }
+  #album-player-overlay > div > div:first-child p:first-child {
+    font-size: 9px;
+  }
+  #album-player-overlay > div > div:first-child button {
+    padding: 4px 10px !important;
+    font-size: 12px;
+  }
+  #player-panels {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    touch-action: pan-x pan-y;
+  }
+  #player-panels::-webkit-scrollbar { display: none; }
+  #player-photo-panel,
+  #player-info {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    box-sizing: border-box;
+  }
+  #player-photo-panel {
+    border-radius: 0 !important;
+    padding: 5px 42px !important;
+  }
+  #player-photo {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+  }
+  #player-info {
+    overflow-y: auto;
+    justify-content: center;
+    padding: 12px 16px !important;
+  }
+  #player-info > div {
+    max-width: 620px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 14px !important;
+  }
+  #album-player-overlay > div > div:last-child {
+    flex: 0 0 auto;
+    padding: 5px 10px !important;
+  }
+  #player-pause {
+    padding: 6px 18px !important;
+    font-size: 11px;
+  }
+}
+</style>
+
 </head>
 <body data-page="album" class="bg-zinc-950 text-gray-200 font-sans antialiased flex flex-col min-h-screen">
     <div id="pantalla-carga" class="fixed inset-0 bg-zinc-950 z-[9999] flex flex-col items-center justify-center">
@@ -1404,8 +1493,8 @@
             <div id="album-player-overlay" class="fixed inset-0 z-[300] hidden items-center justify-center bg-black/95 backdrop-blur-lg p-4 opacity-0 transition-opacity duration-500">
               <div class="relative w-full max-w-[1500px] h-[92vh] bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col">
                 <div class="flex items-center justify-between px-5 py-4 border-b border-zinc-800"><div><p class="text-brand-accent text-xs uppercase tracking-[.2em] font-bold">Presentación del álbum</p><p id="player-position" class="text-gray-400 text-xs mt-1"></p></div><button id="player-close" class="px-4 py-2 border border-zinc-700 rounded-lg text-white hover:border-brand-accent">Cerrar ×</button></div>
-                <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 p-4">
-                  <div class="relative flex items-center justify-center min-h-0 bg-black rounded-xl overflow-hidden"><img id="player-photo" src="" class="max-w-full max-h-full object-contain opacity-100 transition-opacity duration-700">
+                <div id="player-panels" class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 p-4">
+                  <div id="player-photo-panel" class="relative flex items-center justify-center min-h-0 bg-black rounded-xl overflow-hidden"><img id="player-photo" src="" class="max-w-full max-h-full object-contain opacity-100 transition-opacity duration-700">
                     <button id="player-prev" class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/70 border border-white/30 text-white w-11 h-11 text-2xl">‹</button><button id="player-next" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/70 border border-white/30 text-white w-11 h-11 text-2xl">›</button></div>
                   <aside id="player-info" class="flex flex-col justify-center"></aside>
                 </div>
@@ -1461,9 +1550,19 @@
             document.getElementById('album-prev').addEventListener('click',()=>{if(page>0){stopPlay();page--;selected=Math.min(page*perPage,all.length-1);updateMain();draw();}});
             document.getElementById('album-next').addEventListener('click',()=>{if((page+1)*perPage<all.length){stopPlay();page++;selected=page*perPage;updateMain();draw();}});
             const overlay=document.getElementById('album-player-overlay'),playerPhoto=document.getElementById('player-photo');
+            const playerPanels=document.getElementById('player-panels');
+            let playerPanelScrollFrame=0;
+            playerPanels.addEventListener('scroll',()=>{
+                if(!window.matchMedia('(max-width: 900px) and (orientation: landscape) and (max-height: 600px)').matches)return;
+                if(playerPanelScrollFrame)return;
+                playerPanelScrollFrame=requestAnimationFrame(()=>{
+                    playerPanelScrollFrame=0;
+                    if(playerPanels.scrollLeft>=playerPanels.clientWidth*0.35 && isPlaying)stopPlay();
+                });
+            },{passive:true});
             const updatePlayer=()=>{playerPhoto.style.opacity='0';setTimeout(()=>{playerPhoto.src=urlImagenGaleria(all[selected],ev);playerPhoto.style.opacity='1';},250);document.getElementById('player-position').textContent=`${selected+1} / ${all.length}`;document.getElementById('player-info').innerHTML=photoInfoHtml();document.getElementById('player-prev').classList.toggle('hidden',selected===0);document.getElementById('player-next').classList.toggle('hidden',selected===all.length-1);};
             const closePlayer=()=>{stopPlay();overlay.classList.add('opacity-0');setTimeout(()=>{overlay.classList.add('hidden');overlay.classList.remove('flex');},500);};
-            document.getElementById('album-play').addEventListener('click',()=>{if(selected>=all.length-1){selected=0;page=0;updateMain();draw();}playerOpen=true;overlay.classList.remove('hidden');overlay.classList.add('flex');requestAnimationFrame(()=>overlay.classList.remove('opacity-0'));updatePlayer();isPlaying=true;document.getElementById('player-pause').textContent='Ⅱ Pausar';playTimer=setInterval(()=>{if(selected>=all.length-1){stopPlay();return;}selected++;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();},2000);});
+            document.getElementById('album-play').addEventListener('click',()=>{if(selected>=all.length-1){selected=0;page=0;updateMain();draw();}playerOpen=true;overlay.classList.remove('hidden');overlay.classList.add('flex');playerPanels.scrollLeft=0;requestAnimationFrame(()=>{playerPanels.scrollLeft=0;overlay.classList.remove('opacity-0');});updatePlayer();isPlaying=true;document.getElementById('player-pause').textContent='Ⅱ Pausar';playTimer=setInterval(()=>{if(selected>=all.length-1){stopPlay();return;}selected++;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();},2000);});
             document.getElementById('player-close').addEventListener('click',closePlayer);
             document.getElementById('player-pause').addEventListener('click',()=>{if(isPlaying){stopPlay();}else{isPlaying=true;document.getElementById('player-pause').textContent='Ⅱ Pausar';playTimer=setInterval(()=>{if(selected>=all.length-1){stopPlay();return;}selected++;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();},2000);}});
             document.getElementById('player-prev').addEventListener('click',()=>{if(selected>0){selected--;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();}});
