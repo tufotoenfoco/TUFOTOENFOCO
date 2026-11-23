@@ -246,8 +246,9 @@
 </style>
 
 
-<style>
-/* Reproductor móvil en horizontal: fotografía primero e información al deslizar hacia arriba */
+<style id="player-mobile-landscape-controls">
+/* Reproductor móvil horizontal: navegación mediante botón, sin gesto vertical obligatorio */
+#player-info-toggle, #player-buy-shortcut, #player-download-shortcut { display:none; }
 @media (max-width: 900px) and (orientation: landscape) and (max-height: 600px) {
   #album-player-overlay { padding:0 !important; align-items:stretch !important; }
   #album-player-overlay > div { width:100% !important; max-width:none !important; height:100dvh !important; max-height:100dvh !important; border-radius:0 !important; border:0 !important; }
@@ -257,9 +258,9 @@
   #player-panels {
     display:flex !important; flex-direction:column !important; flex:1 1 auto !important;
     gap:0 !important; padding:0 !important; width:100%; min-height:0 !important;
-    overflow-x:hidden !important; overflow-y:auto !important; overscroll-behavior-y:contain;
+    overflow-x:hidden !important; overflow-y:hidden !important; overscroll-behavior:none;
     scroll-snap-type:y mandatory; scroll-behavior:smooth; -webkit-overflow-scrolling:touch;
-    scrollbar-width:none; touch-action:pan-y;
+    scrollbar-width:none; touch-action:pan-x;
   }
   #player-panels::-webkit-scrollbar { display:none; }
   #player-photo-panel, #player-info {
@@ -271,14 +272,24 @@
   #player-photo { max-width:100% !important; max-height:100% !important; width:auto !important; height:auto !important; object-fit:contain !important; }
   #player-info { overflow-y:auto; justify-content:center; padding:12px 16px !important; }
   #player-info > div { max-width:620px; width:100%; margin:auto; padding:14px !important; }
-  #player-swipe-hint { display:flex !important; }
-  #player-info-swipe-hint { display:flex !important; }
-  #album-player-overlay > div > div:last-child { flex:0 0 auto; padding:5px 8px !important; }
-  #player-controls { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px !important; }
-  #player-controls button, #player-controls a { padding:6px 10px !important; font-size:10px !important; white-space:nowrap; }
-}
-@media (min-width: 901px), (orientation: portrait), (max-height: 600px) and (min-width: 901px) {
   #player-swipe-hint, #player-info-swipe-hint { display:none !important; }
+  #album-player-overlay > div > div:last-child { flex:0 0 auto; padding:5px 8px !important; }
+  #player-controls { display:flex; flex-wrap:nowrap; align-items:center; justify-content:center; gap:8px !important; }
+  #player-controls button, #player-controls a { padding:0 !important; font-size:10px !important; white-space:nowrap; }
+  #player-pause { min-height:40px; padding:0 14px !important; }
+  #player-info-toggle, #player-buy-shortcut, #player-download-shortcut {
+    display:inline-flex !important; align-items:center; justify-content:center;
+    width:42px; height:42px; min-width:42px; border-radius:9px;
+    background:rgba(24,24,27,.95); border:1px solid rgba(255,255,255,.25);
+    color:#fff; transition:background .2s,border-color .2s;
+  }
+  /* El acceso a información usa el mismo acabado neutro que descarga */
+  #player-info-toggle { border-color:rgba(255,255,255,.35); color:#fff; gap:3px; }
+  #player-info-toggle [data-info-icon] { width:21px; height:21px; }
+  #player-info-toggle [data-info-arrow] { width:14px; height:14px; }
+  #player-buy-shortcut { border-color:#F1E933; color:#F1E933; }
+  #player-download-shortcut { border-color:rgba(255,255,255,.35); color:#fff; }
+  #player-buy-shortcut svg, #player-download-shortcut svg { width:21px; height:21px; }
 }
 </style>
 
@@ -1444,16 +1455,16 @@
                 <div id="player-panels" class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 p-4">
                   <div id="player-photo-panel" class="relative flex items-center justify-center min-h-0 bg-black rounded-xl overflow-hidden"><img id="player-photo" src="" class="max-w-full max-h-full object-contain opacity-100 transition-opacity duration-700">
                     <button id="player-prev" aria-label="Fotografía anterior" class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/70 border border-white/30 text-white w-11 h-11 text-2xl">‹</button><button id="player-next" aria-label="Fotografía siguiente" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/70 border border-white/30 text-white w-11 h-11 text-2xl">›</button>
-                    <div id="player-swipe-hint" class="hidden absolute bottom-2 left-1/2 -translate-x-1/2 items-center gap-2 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-[10px] font-semibold tracking-wide text-white shadow-lg pointer-events-none"><span class="text-brand-accent text-base leading-none">↑</span><span>Desliza hacia arriba para ver la información</span></div></div>
-                  <aside id="player-info" class="relative flex flex-col justify-center"><div id="player-info-swipe-hint" class="hidden items-center justify-center gap-2 pb-2 text-[10px] font-semibold tracking-wide text-zinc-300 pointer-events-none"><span class="text-brand-accent text-base leading-none">↓</span><span>Desliza hacia abajo para volver a la fotografía</span></div></aside>
+                  </div>
+                  <aside id="player-info" class="relative flex flex-col justify-center"></aside>
                 </div>
-                <div class="px-5 py-3 border-t border-zinc-800"><div id="player-controls" class="flex flex-wrap items-center justify-center gap-2"><button id="player-pause" class="px-6 py-2 bg-brand-accent text-black rounded-lg font-bold text-xs uppercase tracking-wider">Ⅱ Pausar</button>${/^https?:\/\//i.test(linkCompra)?`<a id="player-buy-shortcut" href="${safe(linkCompra)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-brand-accent text-brand-accent rounded-lg font-bold text-xs uppercase tracking-wider">Comprar</a>`:''}${free?'<button id="player-download-shortcut" type="button" class="px-4 py-2 border border-zinc-600 text-white rounded-lg font-bold text-xs uppercase tracking-wider">Descargar</button>':''}</div></div>
+                <div class="px-5 py-3 border-t border-zinc-800"><div id="player-controls" class="flex flex-wrap items-center justify-center gap-2"><button id="player-info-toggle" type="button" aria-label="Ver información de la fotografía" title="Ver información de la fotografía" class="hidden"><svg data-info-arrow viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 14 5-5 5 5"/></svg><svg data-info-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg></button><button id="player-pause" class="px-6 py-2 bg-brand-accent text-black rounded-lg font-bold text-xs uppercase tracking-wider">Ⅱ Pausar</button>${/^https?:\/\//i.test(linkCompra)?`<a id="player-buy-shortcut" href="${safe(linkCompra)}" target="_blank" rel="noopener noreferrer" aria-label="Comprar fotografía" title="Comprar fotografía"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></a>`:''}${free?'<button id="player-download-shortcut" type="button" aria-label="Descargar fotografía" title="Descargar fotografía"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg></button>':''}</div></div>
               </div>
             </div>`;
             const main=document.getElementById('album-main-photo');
             const details=document.getElementById('album-photo-details');
             const stopPlay=()=>{if(playTimer){clearInterval(playTimer);playTimer=null;}isPlaying=false;const b=document.getElementById('player-pause');if(b)b.textContent='▶ Reanudar';};
-            const photoInfoHtml=()=>`<div id="player-info-swipe-hint" class="hidden items-center justify-center gap-2 pb-2 text-[10px] font-semibold tracking-wide text-zinc-300 pointer-events-none"><span class="text-brand-accent text-base leading-none">↓</span><span>Desliza hacia abajo para volver a la fotografía</span></div><div class="rounded-xl border border-zinc-700 bg-zinc-900/95 p-5"><p class="text-brand-accent text-[11px] uppercase tracking-[.2em] font-bold mb-3">Información de la fotografía</p><p class="text-white font-bold break-all">${safe(nombreFoto(all[selected],selected))}</p><p class="text-white mt-2 font-semibold">${safe(ev.Titulo||'')}</p><div class="mt-3 space-y-2 text-sm text-gray-300"><p><span class="text-brand-accent">Fecha</span> · ${safe(ev.Fecha||'—')}</p><p><span class="text-brand-accent">Lugar</span> · ${safe(ev.Lugar||'—')}</p></div><div class="flex flex-col gap-2 mt-4">${free?'<button type="button" id="player-free-download" class="w-full px-4 py-3 border border-zinc-600 text-white rounded-lg text-xs font-bold uppercase">Descargar gratis con marca de agua</button>':''}${/^https?:\/\//i.test(linkCompra)?`<a href="${safe(linkCompra)}" target="_blank" rel="noopener noreferrer" class="tfe-buy-link block text-center px-4 py-3 bg-brand-accent text-black rounded-lg text-xs font-bold uppercase">Tu recuerdo sin logotipo</a>`:''}</div></div>`;
+            const photoInfoHtml=()=>`<div class="rounded-xl border border-zinc-700 bg-zinc-900/95 p-5"><p class="text-brand-accent text-[11px] uppercase tracking-[.2em] font-bold mb-3">Información de la fotografía</p><p class="text-white font-bold break-all">${safe(nombreFoto(all[selected],selected))}</p><p class="text-white mt-2 font-semibold">${safe(ev.Titulo||'')}</p><div class="mt-3 space-y-2 text-sm text-gray-300"><p><span class="text-brand-accent">Fecha</span> · ${safe(ev.Fecha||'—')}</p><p><span class="text-brand-accent">Lugar</span> · ${safe(ev.Lugar||'—')}</p></div><div class="flex flex-col gap-2 mt-4">${free?'<button type="button" id="player-free-download" class="w-full px-4 py-3 border border-zinc-600 text-white rounded-lg text-xs font-bold uppercase">Descargar gratis con marca de agua</button>':''}${/^https?:\/\//i.test(linkCompra)?`<a href="${safe(linkCompra)}" target="_blank" rel="noopener noreferrer" class="tfe-buy-link block text-center px-4 py-3 bg-brand-accent text-black rounded-lg text-xs font-bold uppercase">Tu recuerdo sin logotipo</a>`:''}</div></div>`;
             const downloadSelected=()=>{
                 if(playerOpen && isPlaying) stopPlay();
                 arrayFotosActuales=all;
@@ -1501,19 +1512,47 @@
             document.getElementById('album-next').addEventListener('click',()=>{if((page+1)*perPage<all.length){stopPlay();page++;selected=page*perPage;updateMain();draw();}});
             const overlay=document.getElementById('album-player-overlay'),playerPhoto=document.getElementById('player-photo');
             const playerPanels=document.getElementById('player-panels');
-            let playerPanelScrollFrame=0;
-            playerPanels.addEventListener('scroll',()=>{
-                if(!window.matchMedia('(max-width: 900px) and (orientation: landscape) and (max-height: 600px)').matches)return;
-                if(playerPanelScrollFrame)return;
-                playerPanelScrollFrame=requestAnimationFrame(()=>{
-                    playerPanelScrollFrame=0;
-                    // Al subir hasta la ficha de información, detener la presentación.
-                    if(playerPanels.scrollTop>=playerPanels.clientHeight*0.35 && isPlaying)stopPlay();
-                });
+            const isCompactLandscape=()=>window.matchMedia('(max-width: 900px) and (orientation: landscape) and (max-height: 600px)').matches;
+            const infoToggle=document.getElementById('player-info-toggle');
+            let infoPanelVisible=false;
+            const setInfoPanelVisible=(visible)=>{
+                infoPanelVisible=!!visible;
+                if(infoPanelVisible && isPlaying)stopPlay();
+                playerPanels.scrollTo({top:infoPanelVisible?playerPanels.clientHeight:0,behavior:'smooth'});
+                if(infoToggle){
+                    const arrow=infoToggle.querySelector('[data-info-arrow]');
+                    const icon=infoToggle.querySelector('[data-info-icon]');
+                    if(arrow)arrow.innerHTML=infoPanelVisible
+                        ?'<path d="m7 10 5 5 5-5"/>'
+                        :'<path d="m7 14 5-5 5 5"/>';
+                    if(icon)icon.innerHTML=infoPanelVisible
+                        ?'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/>'
+                        :'<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/>';
+                    const label=infoPanelVisible?'Volver a la fotografía':'Ver información de la fotografía';
+                    infoToggle.setAttribute('aria-label',label);infoToggle.title=label;
+                }
+            };
+            infoToggle?.addEventListener('click',()=>setInfoPanelVisible(!infoPanelVisible));
+
+            // Gesto vertical deliberado: subir para abrir la información y bajar para volver a la foto.
+            let playerTouchStart=null;
+            playerPanels.addEventListener('touchstart',(event)=>{
+                if(!isCompactLandscape() || event.touches.length!==1)return;
+                playerTouchStart={x:event.touches[0].clientX,y:event.touches[0].clientY};
             },{passive:true});
+            playerPanels.addEventListener('touchend',(event)=>{
+                if(!isCompactLandscape() || !playerTouchStart || event.changedTouches.length!==1){playerTouchStart=null;return;}
+                const dx=event.changedTouches[0].clientX-playerTouchStart.x;
+                const dy=event.changedTouches[0].clientY-playerTouchStart.y;
+                playerTouchStart=null;
+                if(Math.abs(dy)<65 || Math.abs(dy)<Math.abs(dx)*1.25)return;
+                if(dy<0 && !infoPanelVisible)setInfoPanelVisible(true);
+                else if(dy>0 && infoPanelVisible)setInfoPanelVisible(false);
+            },{passive:true});
+            playerPanels.addEventListener('touchcancel',()=>{playerTouchStart=null;},{passive:true});
             const updatePlayer=()=>{playerPhoto.style.opacity='0';setTimeout(()=>{playerPhoto.src=urlImagenGaleria(all[selected],ev);playerPhoto.style.opacity='1';},250);document.getElementById('player-position').textContent=`${selected+1} / ${all.length}`;document.getElementById('player-info').innerHTML=photoInfoHtml();document.getElementById('player-prev').classList.toggle('hidden',selected===0);document.getElementById('player-next').classList.toggle('hidden',selected===all.length-1);};
             const closePlayer=()=>{stopPlay();overlay.classList.add('opacity-0');setTimeout(()=>{overlay.classList.add('hidden');overlay.classList.remove('flex');},500);};
-            document.getElementById('album-play').addEventListener('click',()=>{if(selected>=all.length-1){selected=0;page=0;updateMain();draw();}playerOpen=true;overlay.classList.remove('hidden');overlay.classList.add('flex');playerPanels.scrollTop=0;playerPanels.scrollLeft=0;requestAnimationFrame(()=>{playerPanels.scrollTop=0;playerPanels.scrollLeft=0;overlay.classList.remove('opacity-0');});updatePlayer();isPlaying=true;document.getElementById('player-pause').textContent='Ⅱ Pausar';playTimer=setInterval(()=>{if(selected>=all.length-1){stopPlay();return;}selected++;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();},2000);});
+            document.getElementById('album-play').addEventListener('click',()=>{if(selected>=all.length-1){selected=0;page=0;updateMain();draw();}playerOpen=true;overlay.classList.remove('hidden');overlay.classList.add('flex');infoPanelVisible=false;if(infoToggle){const arrow=infoToggle.querySelector('[data-info-arrow]');const icon=infoToggle.querySelector('[data-info-icon]');if(arrow)arrow.innerHTML='<path d="m7 14 5-5 5 5"/>';if(icon)icon.innerHTML='<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/>';infoToggle.setAttribute('aria-label','Ver información de la fotografía');infoToggle.title='Ver información de la fotografía';}playerPanels.scrollTop=0;playerPanels.scrollLeft=0;requestAnimationFrame(()=>{playerPanels.scrollTop=0;playerPanels.scrollLeft=0;overlay.classList.remove('opacity-0');});updatePlayer();isPlaying=true;document.getElementById('player-pause').textContent='Ⅱ Pausar';playTimer=setInterval(()=>{if(selected>=all.length-1){stopPlay();return;}selected++;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();},2000);});
             document.getElementById('player-close').addEventListener('click',closePlayer);
             document.getElementById('player-pause').addEventListener('click',()=>{if(isPlaying){stopPlay();}else{isPlaying=true;document.getElementById('player-pause').textContent='Ⅱ Pausar';playTimer=setInterval(()=>{if(selected>=all.length-1){stopPlay();return;}selected++;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();},2000);}});
             document.getElementById('player-prev').addEventListener('click',()=>{if(selected>0){selected--;page=Math.floor(selected/perPage);updateMain();draw();updatePlayer();}});
