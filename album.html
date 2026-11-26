@@ -1488,7 +1488,6 @@
                 mobilePhotoOverlay.classList.remove('flex');
                 window.scrollTo({top:mobileOverlayScrollY,behavior:'auto'});
             };
-            document.getElementById('album-mobile-photo-download')?.addEventListener('click',downloadSelected);
             document.getElementById('album-mobile-photo-close').addEventListener('click',closeMobilePhoto);
             mobilePhotoOverlay.addEventListener('click',e=>{if(e.target===mobilePhotoOverlay)closeMobilePhoto();});
             document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!mobilePhotoOverlay.classList.contains('hidden'))closeMobilePhoto();});
@@ -1520,6 +1519,7 @@
                 options.classList.add('flex');
                 toggleModal(options,true);
             };
+            document.getElementById('album-mobile-photo-download')?.addEventListener('click',downloadSelected);
             const updateDetails=()=>{document.getElementById('album-photo-details').innerHTML=photoInfoHtml();document.getElementById('album-photo-details').classList.remove('hidden');};
             const updateMain=()=>{if(!mobilePhotoOverlay.classList.contains('hidden'))mobilePhotoImage.src=urlImagenGaleria(all[selected],ev);main.style.opacity='0.25';const url=urlImagenGaleria(all[selected],ev);const preload=new Image();preload.onload=()=>{main.src=url;main.style.opacity='1';};preload.onerror=()=>{main.src=placeholderImagen;main.style.opacity='1';};preload.src=url;document.getElementById('album-photo-position').textContent=`${selected+1} / ${all.length}`;document.getElementById('album-photo-prev').classList.toggle('hidden',selected===0);document.getElementById('album-photo-next').classList.toggle('hidden',selected===all.length-1);if(!details.classList.contains('hidden'))updateDetails();};
             const draw=()=>{const start=page*perPage,end=Math.min(start+perPage,all.length),holder=document.getElementById('album-thumbs');
