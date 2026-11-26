@@ -1469,12 +1469,12 @@
               <div class="flex w-full shrink-0 items-center justify-end pt-[max(4px,env(safe-area-inset-top))] pb-2">
                 <button type="button" id="album-mobile-photo-close" aria-label="Cerrar fotografía" class="rounded-full border border-brand-accent bg-brand-accent px-4 py-2 text-black text-2xl leading-none hover:bg-white hover:border-white transition-colors">×</button>
               </div>
-              <div id="album-mobile-photo-stage" class="flex min-h-0 flex-1 w-full items-center justify-center gap-2 md:gap-4 touch-pan-y">
-                <button type="button" id="album-overlay-prev" aria-label="Fotografía anterior" class="hidden md:flex relative z-10 shrink-0 items-center justify-center rounded-full border border-white/40 bg-black/70 text-white w-12 h-12 text-3xl hover:bg-brand-accent hover:text-black">‹</button>
+              <div id="album-mobile-photo-stage" class="relative flex min-h-0 flex-1 w-full items-center justify-center gap-2 md:gap-2 touch-pan-y">
+                <button type="button" id="album-overlay-prev" aria-label="Fotografía anterior" class="hidden md:flex absolute top-1/2 z-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-black/70 text-white w-12 h-12 text-3xl hover:bg-brand-accent hover:text-black">‹</button>
                 <div class="min-w-0 min-h-0 flex-1 w-full h-full flex items-center justify-center">
                   <img id="album-mobile-photo-image" src="" alt="Fotografía ampliada" class="max-h-full max-w-full object-contain select-none" draggable="false">
                 </div>
-                <button type="button" id="album-overlay-next" aria-label="Fotografía siguiente" class="hidden md:flex relative z-10 shrink-0 items-center justify-center rounded-full border border-white/40 bg-black/70 text-white w-12 h-12 text-3xl hover:bg-brand-accent hover:text-black">›</button>
+                <button type="button" id="album-overlay-next" aria-label="Fotografía siguiente" class="hidden md:flex absolute top-1/2 z-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-black/70 text-white w-12 h-12 text-3xl hover:bg-brand-accent hover:text-black">›</button>
               </div>
               <div class="flex w-full shrink-0 items-center justify-center gap-3 pt-3 pb-[max(8px,env(safe-area-inset-bottom))]">
                 ${free?'<button type="button" id="album-mobile-photo-download" class="rounded-lg bg-zinc-700 px-5 py-3 text-xs font-bold uppercase tracking-wider text-white">Descargar</button>':''}
@@ -1495,8 +1495,14 @@
                 mobilePhotoOverlay.classList.remove('flex');
                 window.scrollTo({top:mobileOverlayScrollY,behavior:'auto'});
             };
-            document.getElementById('album-mobile-photo-close').addEventListener('click',closeMobilePhoto);
-            mobilePhotoOverlay.addEventListener('click',e=>{if(e.target===mobilePhotoOverlay)closeMobilePhoto();});
+            const mobilePhotoClose=document.getElementById('album-mobile-photo-close');
+            mobilePhotoClose.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();closeMobilePhoto();});
+            mobilePhotoOverlay.addEventListener('click',e=>{
+                if(mobilePhotoOverlay.classList.contains('hidden'))return;
+                // La foto y los controles interactivos no deben cerrar el visor.
+                if(e.target.closest('#album-mobile-photo-image, #album-mobile-photo-close, #album-overlay-prev, #album-overlay-next, #album-mobile-photo-download, a'))return;
+                closeMobilePhoto();
+            });
             document.addEventListener('keydown',e=>{
                 if(mobilePhotoOverlay.classList.contains('hidden'))return;
                 if(e.key==='Escape'){closeMobilePhoto();return;}
@@ -1533,7 +1539,7 @@
             };
             document.getElementById('album-mobile-photo-download')?.addEventListener('click',downloadSelected);
             const updateDetails=()=>{document.getElementById('album-photo-details').innerHTML=photoInfoHtml();document.getElementById('album-photo-details').classList.remove('hidden');};
-            const updateMain=()=>{if(!mobilePhotoOverlay.classList.contains('hidden')){mobilePhotoImage.src=urlImagenGaleria(all[selected],ev);}main.style.opacity='0.25';const url=urlImagenGaleria(all[selected],ev);const preload=new Image();preload.onload=()=>{main.src=url;main.style.opacity='1';};preload.onerror=()=>{main.src=placeholderImagen;main.style.opacity='1';};preload.src=url;document.getElementById('album-photo-position').textContent=`${selected+1} / ${all.length}`;document.getElementById('album-photo-prev').classList.toggle('hidden',selected===0);document.getElementById('album-photo-next').classList.toggle('hidden',selected===all.length-1);document.getElementById('album-overlay-prev').classList.toggle('opacity-30',selected===0);document.getElementById('album-overlay-prev').disabled=selected===0;document.getElementById('album-overlay-next').classList.toggle('opacity-30',selected===all.length-1);document.getElementById('album-overlay-next').disabled=selected===all.length-1;if(!details.classList.contains('hidden'))updateDetails();};
+            const updateMain=()=>{if(!mobilePhotoOverlay.classList.contains('hidden')){mobilePhotoImage.src=urlImagenGaleria(all[selected],ev);requestAnimationFrame(positionOverlayArrows);}main.style.opacity='0.25';const url=urlImagenGaleria(all[selected],ev);const preload=new Image();preload.onload=()=>{main.src=url;main.style.opacity='1';};preload.onerror=()=>{main.src=placeholderImagen;main.style.opacity='1';};preload.src=url;document.getElementById('album-photo-position').textContent=`${selected+1} / ${all.length}`;document.getElementById('album-photo-prev').classList.toggle('hidden',selected===0);document.getElementById('album-photo-next').classList.toggle('hidden',selected===all.length-1);document.getElementById('album-overlay-prev').classList.toggle('opacity-30',selected===0);document.getElementById('album-overlay-prev').disabled=selected===0;document.getElementById('album-overlay-next').classList.toggle('opacity-30',selected===all.length-1);document.getElementById('album-overlay-next').disabled=selected===all.length-1;if(!details.classList.contains('hidden'))updateDetails();};
             const draw=()=>{const start=page*perPage,end=Math.min(start+perPage,all.length),holder=document.getElementById('album-thumbs');
                 document.getElementById('album-counter').textContent=`${end} de ${fotosTotal} fotografías`;
                 if(Number(holder.dataset.page)!==page){holder.dataset.page=String(page);holder.innerHTML=all.slice(start,end).map((url,i)=>`<button type="button" class="aspect-square rounded-lg overflow-hidden border-2 border-transparent bg-zinc-800 transition-all" data-photo="${start+i}" aria-label="Ver fotografía ${start+i+1}"><img src="${urlImagenGaleria(url,ev)}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${placeholderImagen}'"></button>`).join('');}
@@ -1543,6 +1549,18 @@
             const selectPhoto=(n)=>{selected=Math.max(0,Math.min(all.length-1,n));page=Math.floor(selected/perPage);updateMain();draw();};
             let mobileTouchStartX=0,mobileTouchStartY=0;
             const mobilePhotoStage=document.getElementById('album-mobile-photo-stage');
+            const overlayPrev=document.getElementById('album-overlay-prev');
+            const overlayNext=document.getElementById('album-overlay-next');
+            const positionOverlayArrows=()=>{
+                if(window.innerWidth<768)return;
+                const stageRect=mobilePhotoStage.getBoundingClientRect();
+                const photoRect=mobilePhotoImage.getBoundingClientRect();
+                const margin=8;
+                overlayPrev.style.left=Math.max(4,photoRect.left-stageRect.left-overlayPrev.offsetWidth-margin)+'px';
+                overlayNext.style.right=Math.max(4,stageRect.right-photoRect.right-overlayNext.offsetWidth-margin)+'px';
+            };
+            mobilePhotoImage.addEventListener('load',positionOverlayArrows);
+            window.addEventListener('resize',positionOverlayArrows);
             document.getElementById('album-overlay-prev').addEventListener('click',()=>selectPhoto(selected-1));
             document.getElementById('album-overlay-next').addEventListener('click',()=>selectPhoto(selected+1));
             mobilePhotoStage.addEventListener('touchstart',e=>{if(e.touches.length===1){mobileTouchStartX=e.touches[0].clientX;mobileTouchStartY=e.touches[0].clientY;}},{passive:true});
